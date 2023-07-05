@@ -1,0 +1,53 @@
+{
+    "$schema": "https://www.krakend.io/schema/v3.json",
+    "version": 3,
+    "extra_config": {
+        "telemetry/logging": {
+            "level": "INFO",
+            "prefix": "[KRAKEND]",
+            "syslog": false,
+            "stdout": true,
+            "format": "custom",
+            "custom_format": "%{message}"
+        },
+        "security/cors": {
+            "allow_origins": [
+                "*"
+            ],
+            "allow_methods": [
+                "GET",
+                "HEAD",
+                "POST"
+            ],
+            "allow_headers": [
+                "Accept-Language",
+                "Content-Length",
+                "Origin",
+                "Authorization",
+                "Content-Type",
+                "Cache-Control",
+                "Pragma"
+            ],
+            "max_age": "12h",
+            "allow_credentials": true,
+            "debug": false
+        }
+    },
+    "endpoints": [
+        {
+            "endpoint": "/api/user/login",
+            "output_encoding": "no-op",
+            "method": "POST",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/login",
+                    "host": [
+                        "http://localhost:8000"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        }
+    ]
+}
