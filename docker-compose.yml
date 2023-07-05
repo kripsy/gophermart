@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   postgres_db:
-    image: postgres:13.4
+    image: postgres:15.3
     restart: always
     environment:
       - POSTGRES_PASSWORD=RASKkCt3PVEU
@@ -12,65 +12,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - pg_data:/var/lib/postgresql/data
-  
-
-  migration_db_up:
-    image: migrate/migrate:v4.16.2
-    command:
-      [
-        "-path", "/migrations",
-        "-database" , "postgres://gophermart:RASKkCt3PVEU@172.25.0.2:5432/gophermart?sslmode=disable",
-        "up"
-        ]
-    volumes:
-      - ./db/migrations:/migrations
-    depends_on:
-      - postgres_db
-  
-
-  migration_db_down:
-    image: migrate/migrate:v4.16.2
-    command:
-      [
-        "-path", "/migrations",
-        "-database" , "postgres://gophermart:RASKkCt3PVEU@172.25.0.2:5432/gophermart?sslmode=disable",
-        "down", "-all",
-        ]
-    volumes:
-      - ./db/migrations:/migrations
-    depends_on:
-      - postgres_db
-    
-
-  migration_db_force:
-    image: migrate/migrate:v4.16.2
-    command:
-      [
-        "-path", "/migrations",
-        "-database" , "postgres://gophermart:RASKkCt3PVEU@172.25.0.2:5432/gophermart?sslmode=disable",
-        "force", "3"
-        ]
-    volumes:
-      - ./db/migrations:/migrations
-    depends_on:
-      - postgres_db
-
-
-  migration_db_add:
-    image: migrate/migrate:v4.16.2
-    command:
-      [
-        "create",
-        "-dir", "/migrations",
-        "-ext", ".sql",
-        "-seq", "-digits", "5",
-        "add_url_deleted_flag"
-      ]
-    volumes:
-      - ./db/migrations:/migrations
-
-
+      - pg_data:/var/lib/postgresql/data  
 
   krakend_ce:
     image: devopsfaith/krakend:latest
