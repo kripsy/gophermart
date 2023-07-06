@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  postgres_db:
+    image: postgres:15.3
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=RASKkCt3PVEU
+      - POSTGRES_USER=gophermart
+      - POSTGRES_DB=gophermart
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data  
+
+  krakend_ce:
+    image: devopsfaith/krakend:latest
+    volumes:
+      - ./krakend/config:/etc/krakend
+    ports:
+      - "8080:8080"
+    command: ["run", "-d", "-c", "/etc/krakend/krakend.json"]
+
+volumes:
+  pg_data: {}

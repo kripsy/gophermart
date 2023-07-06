@@ -1,3 +1,7 @@
+# create new migration
+
+1. change `docker-compose.migrations.yml` service `migration_db_add` and exec `docker-compose -f ./docker-compose.migrations.yml up migration_db_add`
+
 # go-musthave-group-diploma-tpl
 
 Шаблон репозитория для группового дипломного проекта курса "Go-разработчик"
