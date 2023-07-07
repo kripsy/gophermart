@@ -7,7 +7,7 @@ create table if not exists public.gophermart_order
     number       text                     not null unique,
     status       text,
     accrual      decimal,
-    uploaded_at  timestamp with time zone not null,
+    uploaded_at  timestamp with time zone not null default now(),
     processed_at timestamp with time zone
 );
 
@@ -20,7 +20,7 @@ create table if not exists public.gophermart_balance
     user_id      text                     not null,
     current      decimal,
     withdrawn    decimal,
-    uploaded_at  timestamp with time zone not null,
+    uploaded_at  timestamp with time zone not null default now(),
     processed_at timestamp with time zone
 );
 
