@@ -1,6 +1,8 @@
 # create new migration
 
-1. change `docker-compose.migrations.yml` service `migration_db_add` and exec `docker-compose -f ./docker-compose.migrations.yml up migration_db_add`
+1. go to /db/{service_name}.
+2. In `docker-compose.migrations.yml` change service `migration_db_add`.
+3. Go to /Makefiles/{service_name} and call `make migration_new `.
 
 # go-musthave-group-diploma-tpl
 

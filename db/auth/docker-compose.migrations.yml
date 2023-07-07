@@ -10,7 +10,7 @@ services:
         "up"
         ]
     volumes:
-      - ./db/auth/migrations:/migrations
+      - ./migrations:/migrations
     
   
 
@@ -23,7 +23,7 @@ services:
         "down", "-all",
         ]
     volumes:
-      - ./db/auth/migrations:/migrations
+      - ./migrations:/migrations
     
     
 
@@ -36,7 +36,7 @@ services:
         "force", "3"
         ]
     volumes:
-      - ./db/auth/migrations:/migrations
+      - ./migrations:/migrations
     
 
 
@@ -48,7 +48,7 @@ services:
         "-dir", "/migrations",
         "-ext", ".sql",
         "-seq", "-digits", "5",
-        "add_users"
+        "test"
       ]
     volumes:
-      - ./db/auth/migrations:/migrations
+      - ./migrations:/migrations
