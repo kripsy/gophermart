@@ -31,13 +31,6 @@ _A detailed list of conditions that must be met for the feature to be considered
 
 _Provide a brief description of how you plan to implement this feature. This could include specific Go libraries, architectural patterns, or third-party services._
 
-### Estimated Time of Completion
-
-_How long do you anticipate this feature will take to develop?_
-
-### Additional Context (optional)
-
-_Add any other context or screenshots about the feature request here._
 
 ### DoD (Definition of Done)
 
@@ -49,3 +42,11 @@ _A set of conditions that must be met on top of the Acceptance Criteria to ensur
 2. Functionality has been tested and passed in a testing environment.
 3. New unit tests were written and existing tests must pass.
 4. The feature's impact on performance was assessed.
+
+### Estimated Time of Completion
+
+_How long do you anticipate this feature will take to develop?_
+
+### Additional Context (optional)
+
+_Add any other context or screenshots about the feature request here._
