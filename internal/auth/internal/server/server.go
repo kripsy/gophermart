@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kripsy/gophermart/internal/auth/handler"
+	"github.com/kripsy/gophermart/internal/auth/internal/handler"
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
 	"go.uber.org/zap"
 )
@@ -25,6 +25,7 @@ func InitServer(ctx context.Context) (*Server, error) {
 	}
 
 	m.Router.HandleFunc("/test", h.TestHandler)
+	m.Router.Post("/api/register", h.RegisterUserHandler)
 
 	return m, nil
 }
