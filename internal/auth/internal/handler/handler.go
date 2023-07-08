@@ -59,16 +59,6 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// I wanted to check for an empty token, but why on earth should the handler do this?
-	// If the token is not generated, it is the responsibility of the token generator,
-	// in which case it should return an error value.
-
-	// if token == "" {
-	// 	l.Debug("token is empty", zap.String("msg", err.Error()))
-	// 	http.Error(w, "", http.StatusInternalServerError)
-	// 	return
-	// }
-
 	w.Header().Add("Content-Type", "application/json")
 	utils.AddToken(w, token, expTime)
 	w.Write([]byte("Hello world"))
