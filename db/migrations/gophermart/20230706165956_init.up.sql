@@ -3,7 +3,7 @@ begin transaction;
 create table if not exists public.gophermart_order
 (
     id           bigint primary key       not null,
-    user_id      text                     not null,
+    user_id      bigint                   not null,
     number       text                     not null unique,
     status       text,
     accrual      decimal,
@@ -17,7 +17,7 @@ create index gophermart_order_status_index_hash on public.gophermart_order using
 create table if not exists public.gophermart_balance
 (
     id           bigint primary key,
-    user_id      text                     not null,
+    user_id      bigint                   not null,
     current      decimal,
     withdrawn    decimal,
     uploaded_at  timestamp with time zone not null default now(),
