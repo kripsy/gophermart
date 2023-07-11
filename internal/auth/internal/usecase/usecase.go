@@ -5,11 +5,11 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/kripsy/gophermart/internal/auth/internal/db"
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
+	"github.com/kripsy/gophermart/internal/auth/internal/models"
 	"go.uber.org/zap"
 )
 
@@ -35,8 +35,9 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 	}
 
 	if isUserExists {
+		userExistsError := models.NewUserExistsError(username, err)
 		l.Debug("user already exists")
-		return "", time.Time{}, fmt.Errorf("user already exists")
+		return "", time.Time{}, userExistsError
 	}
 
 	token, expTime, err := uc.db.RegisterUser(ctx, username, password)
