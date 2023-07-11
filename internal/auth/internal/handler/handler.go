@@ -46,7 +46,6 @@ func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 // If we have success register new user, we insert token into cookie `token` and header `Authorization`.
 func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
-	_ = models.DefaultResponse{}
 	l.Debug("RegisterUserHandler")
 	body, err := io.ReadAll(r.Body)
 	err = r.Body.Close()
