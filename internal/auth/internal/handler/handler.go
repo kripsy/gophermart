@@ -14,11 +14,13 @@ import (
 
 type Handler struct {
 	ctx context.Context
+	uc  *usecase.UseCase
 }
 
-func InitHandler(ctx context.Context) (*Handler, error) {
+func InitHandler(ctx context.Context, uc *usecase.UseCase) (*Handler, error) {
 	h := &Handler{
 		ctx: ctx,
+		uc:  uc,
 	}
 	return h, nil
 }
@@ -52,7 +54,8 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	l.Debug("init new user from body", zap.String("msg", user.Username))
 
-	token, expTime, err := usecase.RegisterUser(h.ctx, user.Username, user.Password)
+	token, expTime, err := h.uc.RegisterUser(h.ctx, user.Username, user.Password)
+
 	if err != nil {
 		l.Debug("error register user", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
