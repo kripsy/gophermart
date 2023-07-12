@@ -1,16 +1,19 @@
 package models
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type UserExistsError struct {
 	Text string
 	Err  error
 }
 
-func NewUserExistsError(username string, err error) error {
+func NewUserExistsError(username string) error {
 	return &UserExistsError{
 		Text: fmt.Sprintf("%v already exists", username),
-		Err:  err,
+		Err:  errors.New("user already exists"),
 	}
 }
 

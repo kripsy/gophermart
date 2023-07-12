@@ -44,7 +44,7 @@ func NewApp(ctx context.Context) (*Application, error) {
 		return nil, err
 	}
 
-	uc, err := usecase.InitUseCases(ctx, db)
+	uc, err := usecase.InitUseCases(ctx, db, cfg)
 	if err != nil {
 		l.Error("error init usecase", zap.String("msg", err.Error()))
 		return nil, err

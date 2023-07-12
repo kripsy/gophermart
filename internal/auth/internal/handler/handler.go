@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 
@@ -36,6 +37,7 @@ func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 // If we have success register new user, we insert token into cookie `token` and header `Authorization`.
 func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
+	isUniqueError := false
 	l.Debug("RegisterUserHandler")
 	body, err := io.ReadAll(r.Body)
 	err = r.Body.Close()
@@ -48,7 +50,7 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := models.InitNewUser(body)
 	if err != nil {
 		l.Debug("error init model of user from request", zap.String("msg", err.Error()))
-		http.Error(w, "", http.StatusInternalServerError)
+		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 
@@ -57,22 +59,21 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	token, expTime, err := h.uc.RegisterUser(h.ctx, user.Username, user.Password)
 
 	if err != nil {
-		l.Debug("error register user", zap.String("msg", err.Error()))
-		http.Error(w, "", http.StatusInternalServerError)
-		return
+		var ue *models.UserExistsError
+		if errors.As(err, &ue) {
+			isUniqueError = true
+		} else {
+			l.Error("error register user", zap.String("msg", err.Error()))
+			http.Error(w, "", http.StatusInternalServerError)
+			return
+		}
 	}
 
-	// I wanted to check for an empty token, but why on earth should the handler do this?
-	// If the token is not generated, it is the responsibility of the token generator,
-	// in which case it should return an error value.
-
-	// if token == "" {
-	// 	l.Debug("token is empty", zap.String("msg", err.Error()))
-	// 	http.Error(w, "", http.StatusInternalServerError)
-	// 	return
-	// }
-
 	w.Header().Add("Content-Type", "application/json")
-	utils.AddToken(w, token, expTime)
-	w.Write([]byte("Hello world"))
+	if isUniqueError {
+		w.WriteHeader(http.StatusConflict)
+	} else {
+		utils.AddToken(w, token, expTime)
+		w.WriteHeader(http.StatusOK)
+	}
 }

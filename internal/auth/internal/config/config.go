@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"os"
+	"time"
 )
 
 type Config struct {
@@ -10,6 +11,8 @@ type Config struct {
 	DatabaseAddress string
 	LoggerLevel     string
 	MigrationsPath  string
+	SecretKey       string
+	TokenExp        time.Duration
 }
 
 func InitConfig() *Config {
@@ -56,5 +59,7 @@ func InitConfig() *Config {
 		DatabaseAddress: *databaseAddress,
 		LoggerLevel:     *loggerLevel,
 		MigrationsPath:  *migrationsPath,
+		SecretKey:       "supersecretkey",
+		TokenExp:        time.Hour * 24,
 	}
 }

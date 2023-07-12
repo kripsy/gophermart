@@ -13,7 +13,6 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
-	"github.com/kripsy/gophermart/internal/auth/internal/utils"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
@@ -60,27 +59,44 @@ func RunMigrations(ctx context.Context, dsn, migrationsPath string) error {
 	return nil
 }
 
-func (db *DB) RegisterUser(ctx context.Context, username, password string) (string, time.Time, error) {
+func (db *DB) RegisterUser(ctx context.Context, username string, hashPassword []byte, id int) error {
 	l := logger.LoggerFromContext(ctx)
-	l.Debug("usecase RegisterUser")
 	ctx, canlcel := context.WithTimeout(ctx, time.Second)
 	defer canlcel()
-	userIsExists, err := db.IsUserExists(ctx, username)
-	if err != nil {
-		l.Error("error check IsUserExists in RegisterUser", zap.String("msg", err.Error()))
-		return "", time.Time{}, err
-	}
-	l.Debug("user is exist?", zap.Bool("msg", userIsExists))
+	l.Debug("usecase RegisterUser")
 
-	token := ""
-	expTime := time.Now().Add(100500 * time.Hour)
-	hash, err := utils.GetHash(ctx, password)
+	tx, err := db.DB.Begin()
 	if err != nil {
-		l.Error("error GetHash in RegisterUser", zap.String("msg", err.Error()))
-		return "", time.Time{}, err
+		l.Error("failed to Begin Tx in RegisterUser", zap.String("msg", err.Error()))
+		return err
 	}
-	l.Debug("got hash in RegisterUser", zap.String("msg", string(hash)))
-	return token, expTime, fmt.Errorf("not implemented yet")
+
+	defer tx.Rollback()
+
+	queryBuilder := squirrel.
+		Insert("users").
+		Columns("id", "username", "password").
+		Values(id, username, hashPassword).
+		PlaceholderFormat(squirrel.Dollar)
+
+	sql, args, err := queryBuilder.ToSql()
+
+	if err != nil {
+		l.Error("failed to build sql in RegisterUser", zap.String("msg", err.Error()))
+		return err
+	}
+
+	l.Debug("success build sql", zap.String("msg", sql))
+
+	_, err = tx.ExecContext(ctx, sql, args...)
+	if err != nil {
+		l.Error("failed to exec sql in RegisterUser", zap.String("msg", err.Error()))
+		return err
+	}
+
+	tx.Commit()
+	l.Debug("success commit RegisterUser")
+	return nil
 }
 
 func (db *DB) IsUserExists(ctx context.Context, username string) (bool, error) {
@@ -98,13 +114,13 @@ func (db *DB) IsUserExists(ctx context.Context, username string) (bool, error) {
 	defer tx.Rollback()
 
 	var userExists bool
-	selectBuilder := squirrel.Select("1").
+	queryBuilder := squirrel.Select("1").
 		Prefix("SELECT EXISTS (").
 		From("users").
 		Where(squirrel.Eq{"username": username}).
 		Suffix(")").
 		PlaceholderFormat(squirrel.Dollar)
-	sql, args, err := selectBuilder.ToSql()
+	sql, args, err := queryBuilder.ToSql()
 
 	if err != nil {
 		l.Error("failed to build sql in IsUserExists", zap.String("msg", err.Error()))
@@ -124,4 +140,51 @@ func (db *DB) IsUserExists(ctx context.Context, username string) (bool, error) {
 	l.Debug("success scan userExists, value ->", zap.Bool("msg", userExists))
 	tx.Commit()
 	return userExists, nil
+}
+
+func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
+	l := logger.LoggerFromContext(ctx)
+	ctx, canlcel := context.WithTimeout(ctx, time.Second)
+	defer canlcel()
+	l.Debug("start GetNextUserID")
+
+	tx, err := db.DB.Begin()
+	if err != nil {
+		l.Error("failed to Begin Tx in getNextUserID", zap.String("msg", err.Error()))
+		return 0, err
+	}
+
+	defer tx.Rollback()
+
+	queryBuilder := squirrel.
+		Select("MAX(id)+1").
+		From("users")
+
+	sql, _, err := queryBuilder.ToSql()
+
+	if err != nil {
+		l.Error("failed to build sql in getNextUserID", zap.String("msg", err.Error()))
+		return 0, err
+	}
+
+	l.Debug("success build sql", zap.String("msg", sql))
+
+	stmt, err := tx.PrepareContext(ctx, sql)
+	if err != nil {
+		l.Error("failed to PrepareContext stmt in getNextUserID", zap.String("msg", err.Error()))
+		return 0, err
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(ctx)
+	var nextID int
+	err = row.Scan(&nextID)
+	if err != nil {
+		l.Error("failed to scan getNextUserID", zap.String("msg", err.Error()))
+		return 0, err
+	}
+
+	tx.Commit()
+	l.Debug("success commit getNextUserID")
+	return nextID, nil
 }
