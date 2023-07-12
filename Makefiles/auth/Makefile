@@ -3,6 +3,11 @@
 db:
 	docker-compose -f ../../docker-compose.yml up postgres_db
 
+
+.PHONY: run
+run:
+	go run ../../cmd/auth/main.go -l "Debug"
+
 .PHONY: api
 api:
 	docker-compose -f ../../docker-compose.yml up krakend_ce

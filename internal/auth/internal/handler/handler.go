@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
-	"github.com/kripsy/gophermart/internal/auth/internal/models"
+	models "github.com/kripsy/gophermart/internal/auth/internal/models"
 	"github.com/kripsy/gophermart/internal/auth/internal/usecase"
 	"github.com/kripsy/gophermart/internal/auth/internal/utils"
 	"go.uber.org/zap"
@@ -30,6 +30,18 @@ func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello world"))
 }
 
+// ShowAccount godoc
+// @Summary      Register
+// @Description  Register new user
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        user   body      models.User  true  "User register data"
+// @Success      200
+// @Failure      400
+// @Failure      409
+// @Failure      500
+// @Router       /api/register [post]
 // RegisterUserHandler accepts a username and password in json format.
 // If we have success register new user, we insert token into cookie `token` and header `Authorization`.
 func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,16 +70,6 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
-
-	// I wanted to check for an empty token, but why on earth should the handler do this?
-	// If the token is not generated, it is the responsibility of the token generator,
-	// in which case it should return an error value.
-
-	// if token == "" {
-	// 	l.Debug("token is empty", zap.String("msg", err.Error()))
-	// 	http.Error(w, "", http.StatusInternalServerError)
-	// 	return
-	// }
 
 	w.Header().Add("Content-Type", "application/json")
 	utils.AddToken(w, token, expTime)

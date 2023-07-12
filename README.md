@@ -1,3 +1,8 @@
+# swag
+
+1. go to root folder project
+2. exec `~/go/bin/swag init -g "cmd/auth/main.go" -o "docs/auth/"`
+
 # create new migration
 
 1. go to /db/{service_name}.
