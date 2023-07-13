@@ -5,7 +5,7 @@ BEGIN TRANSACTION ;
 	(
 		id bigint NOT NULL,
 		username VARCHAR(255) NOT NULL,
-		password bytea NOT NULL,
+		password VARCHAR(60) NOT NULL,
 		CONSTRAINT users_pkey PRIMARY KEY (id)
 	);
 	

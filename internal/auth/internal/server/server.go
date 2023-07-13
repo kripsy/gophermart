@@ -7,7 +7,8 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/kripsy/gophermart/internal/auth/internal/handler"
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
-	httpSwagger "github.com/swaggo/http-swagger"
+  "github.com/kripsy/gophermart/internal/auth/internal/usecase"
+  httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 
 	_ "github.com/kripsy/gophermart/docs/auth"
@@ -17,12 +18,12 @@ type Server struct {
 	Router *chi.Mux
 }
 
-func InitServer(ctx context.Context) (*Server, error) {
+func InitServer(ctx context.Context, uc *usecase.UseCase) (*Server, error) {
 	m := &Server{
 		Router: chi.NewRouter(),
 	}
 	l := logger.LoggerFromContext(ctx)
-	h, err := handler.InitHandler(ctx)
+	h, err := handler.InitHandler(ctx, uc)
 	if err != nil {
 		l.Error("Error in Init server", zap.String("msg", err.Error()))
 		return nil, err
@@ -40,6 +41,7 @@ func InitServer(ctx context.Context) (*Server, error) {
 	}))
 
 	m.Router.Post("/api/register", h.RegisterUserHandler)
+	m.Router.Post("/api/login", h.LoginUserHandler)
 
 	m.Router.Get("/swagger/*", httpSwagger.WrapHandler)
 

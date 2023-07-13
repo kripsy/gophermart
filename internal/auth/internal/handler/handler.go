@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 
@@ -14,11 +15,13 @@ import (
 
 type Handler struct {
 	ctx context.Context
+	uc  *usecase.UseCase
 }
 
-func InitHandler(ctx context.Context) (*Handler, error) {
+func InitHandler(ctx context.Context, uc *usecase.UseCase) (*Handler, error) {
 	h := &Handler{
 		ctx: ctx,
+		uc:  uc,
 	}
 	return h, nil
 }
@@ -46,6 +49,7 @@ func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 // If we have success register new user, we insert token into cookie `token` and header `Authorization`.
 func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
+	isUniqueError := false
 	l.Debug("RegisterUserHandler")
 	body, err := io.ReadAll(r.Body)
 	err = r.Body.Close()
@@ -58,20 +62,73 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := models.InitNewUser(body)
 	if err != nil {
 		l.Debug("error init model of user from request", zap.String("msg", err.Error()))
-		http.Error(w, "", http.StatusInternalServerError)
+		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 
 	l.Debug("init new user from body", zap.String("msg", user.Username))
 
-	token, expTime, err := usecase.RegisterUser(h.ctx, user.Username, user.Password)
+	token, expTime, err := h.uc.RegisterUser(h.ctx, user.Username, user.Password)
+
 	if err != nil {
-		l.Debug("error register user", zap.String("msg", err.Error()))
+		var ue *models.UserExistsError
+		if errors.As(err, &ue) {
+			isUniqueError = true
+		} else {
+			l.Error("error register user", zap.String("msg", err.Error()))
+			http.Error(w, "", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	if isUniqueError {
+		w.WriteHeader(http.StatusConflict)
+	} else {
+		utils.AddToken(w, token, expTime)
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+// LoginUserHandler accepts a username and password in json format.
+// If we have success  user login, we insert token into cookie `token` and header `Authorization`.
+func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+
+	l.Debug("LoginUserHandler")
+	body, err := io.ReadAll(r.Body)
+	err = r.Body.Close()
+	if err != nil {
+		l.Debug("error close body", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
+	user, err := models.InitNewUser(body)
+	if err != nil {
+		l.Debug("error init model of user from request", zap.String("msg", err.Error()))
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+
+	l.Debug("init new user from body in LoginUserHandler", zap.String("msg", user.Username))
+
+	token, expTime, err := h.uc.LoginUser(h.ctx, user.Username, user.Password)
+
+	if err != nil {
+		var userLoginError *models.UserLoginError
+		if errors.As(err, &userLoginError) {
+			l.Error("error login user", zap.String("msg", err.Error()))
+			http.Error(w, "", http.StatusUnauthorized)
+			return
+		}
+		l.Error("error login user", zap.String("msg", err.Error()))
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+
+	}
+
 	w.Header().Add("Content-Type", "application/json")
 	utils.AddToken(w, token, expTime)
-	w.Write([]byte("Hello world"))
+	w.WriteHeader(http.StatusOK)
 }
