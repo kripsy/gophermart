@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -59,7 +60,7 @@ func RunMigrations(ctx context.Context, dsn, migrationsPath string) error {
 	return nil
 }
 
-func (db *DB) RegisterUser(ctx context.Context, username string, hashPassword []byte, id int) error {
+func (db *DB) RegisterUser(ctx context.Context, username, hashPassword string, id int) error {
 	l := logger.LoggerFromContext(ctx)
 	ctx, canlcel := context.WithTimeout(ctx, time.Second)
 	defer canlcel()
@@ -160,16 +161,16 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 		Select("MAX(id)+1").
 		From("users")
 
-	sql, _, err := queryBuilder.ToSql()
+	qbsql, _, err := queryBuilder.ToSql()
 
 	if err != nil {
 		l.Error("failed to build sql in getNextUserID", zap.String("msg", err.Error()))
 		return 0, err
 	}
 
-	l.Debug("success build sql", zap.String("msg", sql))
+	l.Debug("success build sql", zap.String("msg", qbsql))
 
-	stmt, err := tx.PrepareContext(ctx, sql)
+	stmt, err := tx.PrepareContext(ctx, qbsql)
 	if err != nil {
 		l.Error("failed to PrepareContext stmt in getNextUserID", zap.String("msg", err.Error()))
 		return 0, err
@@ -177,7 +178,7 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 	defer stmt.Close()
 
 	row := stmt.QueryRowContext(ctx)
-	var nextID int
+	var nextID sql.NullInt32
 	err = row.Scan(&nextID)
 	if err != nil {
 		l.Error("failed to scan getNextUserID", zap.String("msg", err.Error()))
@@ -186,5 +187,8 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 
 	tx.Commit()
 	l.Debug("success commit getNextUserID")
-	return nextID, nil
+	if !nextID.Valid {
+		return 1, nil
+	}
+	return int(nextID.Int32), nil
 }
