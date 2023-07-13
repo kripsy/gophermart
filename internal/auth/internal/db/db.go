@@ -193,52 +193,48 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 	return int(nextID.Int32), nil
 }
 
-func (db *DB) CompareUserPwd(ctx context.Context, username string, hashPassword []byte) (int, error) {
+func (db *DB) GetUserHashPassword(ctx context.Context, username string) (string, error) {
 	l := logger.LoggerFromContext(ctx)
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
-	l.Debug("start CompareUserPwd")
+	l.Debug("start GetUserHashPassword")
 
 	tx, err := db.DB.Begin()
 	if err != nil {
-		l.Error("failed to Begin Tx in IsUserExists", zap.String("msg", err.Error()))
-		return 0, err
+		l.Error("failed to Begin Tx in GetUserHashPassword", zap.String("msg", err.Error()))
+		return "", err
 	}
 
 	defer tx.Rollback()
 
-	var userID int
-	queryBuilder := squirrel.Select("id").
+	var hashPassword string
+	queryBuilder := squirrel.Select("password").
 		From("users").
-		Where(
-			squirrel.And{
-				squirrel.Eq{"username": username},
-				squirrel.Eq{"password": hashPassword},
-			}).
+		Where(squirrel.Eq{"username": username}).
 		PlaceholderFormat(squirrel.Dollar)
 	bsql, args, err := queryBuilder.ToSql()
 
 	if err != nil {
-		l.Error("failed to build sql in IsUserExists", zap.String("msg", err.Error()))
-		return 0, err
+		l.Error("failed to build sql in GetUserHashPassword", zap.String("msg", err.Error()))
+		return "", err
 	}
 
-	l.Debug("success build sql", zap.String("msg", bsql))
+	l.Debug("success build sql in GetUserHashPassword", zap.String("msg", bsql))
 
 	row := tx.QueryRowContext(ctx, bsql, args...)
 
-	err = row.Scan(&userID)
+	err = row.Scan(&hashPassword)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			l.Debug("error compare username and pwd", zap.String("msg", username))
-			return 0, fmt.Errorf("error compare username and pwd")
+			return "", fmt.Errorf("error compare username and pwd")
 		}
 		l.Error("failed scan userExists", zap.String("msg", err.Error()))
-		return 0, err
+		return "", err
 	}
 
-	l.Debug("success login. userID ->", zap.Int("msg", userID))
+	l.Debug("success get hash password ->", zap.String("msg", hashPassword))
 	tx.Commit()
-	return userID, nil
+	return hashPassword, nil
 }
