@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
 
-  
+
   gophermarket_auth:
     image: docker-auth
     container_name: gophermarket_auth
@@ -15,9 +15,8 @@ services:
     depends_on:
       - gophermarket_postgres_db
       - gophermarket_krakend_ce
-    
-    
-    
+     
+
   gophermarket_postgres_db:
     image: postgres:15.3
     container_name: gophermarket_postgres_db
@@ -32,7 +31,6 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data  
     
-
 
   gophermarket_krakend_ce:
     image: devopsfaith/krakend:latest
