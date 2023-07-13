@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -76,19 +75,15 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(order, err)
-	// TODO тут создаем значение в базе и сразу возвращаем его в код
-
 	//200 — номер заказа уже был загружен этим пользователем;
 	if order.Status != "NEW" {
 		l.Error("ERROR the order number has already been uploaded by another user.")
 		rw.WriteHeader(http.StatusConflict)
 		return
 	}
-	//202 — новый номер заказа принят в обработку;
 
-	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusCreated)
+	//202 — новый номер заказа принят в обработку;
+	rw.WriteHeader(http.StatusAccepted)
 
 	//fmt.Println(bodyBytes)
 
