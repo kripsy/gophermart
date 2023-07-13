@@ -9,34 +9,21 @@ create table if not exists public.gophermart_order
     accrual      int                               default 0,
     uploaded_at  timestamp with time zone not null default now(),
     processed_at timestamp with time zone
---     uploaded_at  timestamp not null default now(),
---     processed_at timestamp
 );
 
--- CREATE FUNCTION gophermart_order_stamp() RETURNS trigger AS $emp_stamp$
--- BEGIN
---     -- Check that empname and salary are given
---     IF NEW.empname IS NULL THEN
---         RAISE EXCEPTION 'empname cannot be null';
---     END IF;
---     IF NEW.salary IS NULL THEN
---         RAISE EXCEPTION '% cannot have null salary', NEW.empname;
---     END IF;
---
---     -- Who works for us when they must pay for it?
---     IF NEW.salary < 0 THEN
---         RAISE EXCEPTION '% cannot have a negative salary', NEW.empname;
---     END IF;
---
---     -- Remember who changed the payroll when
---     NEW.last_date := current_timestamp;
---     NEW.last_user := current_user;
---     RETURN NEW;
--- END;
--- $emp_stamp$ LANGUAGE plpgsql;
---
--- CREATE TRIGGER emp_stamp BEFORE INSERT OR UPDATE ON emp
---     FOR EACH ROW EXECUTE FUNCTION emp_stamp();
+create function gophermart_order_check_update() returns trigger AS
+$emp_stamp$
+begin
+    NEW.processed_at := current_timestamp;
+    return NEW;
+end;
+$emp_stamp$ LANGUAGE plpgsql;
+
+create trigger emp_stamp
+    before update
+    on gophermart_order
+    for each row
+execute function gophermart_order_check_update();
 
 create index gophermart_order_username_index_hash on public.gophermart_order using hash (username);
 create index gophermart_order_status_index_hash on public.gophermart_order using hash (status);

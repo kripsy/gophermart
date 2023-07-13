@@ -11,3 +11,10 @@ type Order struct {
 	UploadedAt  pgtype.Timestamptz
 	ProcessedAt pgtype.Timestamptz
 }
+
+const (
+	StatusNew        = "NEW"        // Заказ загружен в систему, но не попал в обработку;
+	StatusProcessing = "PROCESSING" // Вознаграждение за заказ рассчитывается;
+	StatusInvalid    = "INVALID"    // Система расчёта вознаграждений отказала в расчёте;
+	StatusProcessed  = "PROCESSED"  // Данные по заказу проверены и информация о расчёте успешно получена.
+)

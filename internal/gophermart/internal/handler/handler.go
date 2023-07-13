@@ -76,17 +76,16 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	//200 — номер заказа уже был загружен этим пользователем;
-	if order.Status != "NEW" {
+	if !order.ProcessedAt.Time.IsZero() {
 		l.Error("ERROR the order number has already been uploaded by another user.")
-		rw.WriteHeader(http.StatusConflict)
+		rw.WriteHeader(http.StatusOK)
 		return
 	}
 
 	//202 — новый номер заказа принят в обработку;
 	rw.WriteHeader(http.StatusAccepted)
 
-	//fmt.Println(bodyBytes)
-
+	// TODO Здесь я буду передавать в канал объект ордер в горутину которая будет ходить в сервис начислений.
 }
 
 func (h *Handler) ReadOrdersHandler(w http.ResponseWriter, r *http.Request) {
