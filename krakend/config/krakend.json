@@ -43,7 +43,7 @@
                 {
                     "url_pattern": "/api/login",
                     "host": [
-                        "http://docker.for.mac.localhost:8081"
+                        "http://gophermarket_auth:8080"
                     ],
                     "encoding": "no-op"
                 }
@@ -58,7 +58,7 @@
                 {
                     "url_pattern": "/api/register",
                     "host": [
-                        "http://docker.for.mac.localhost:8081"
+                        "http://gophermarket_auth:8080"
                     ],
                     "encoding": "no-op"
                 }
