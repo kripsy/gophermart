@@ -20,3 +20,19 @@ func NewUserExistsError(username string) error {
 func (ue *UserExistsError) Error() string {
 	return ue.Err.Error()
 }
+
+type UserLoginError struct {
+	Text string
+	Err  error
+}
+
+func NewUserLoginError(username string) error {
+	return &UserLoginError{
+		Text: fmt.Sprintf("login failed for %v", username),
+		Err:  errors.New("login failed"),
+	}
+}
+
+func (ue *UserLoginError) Error() string {
+	return ue.Err.Error()
+}

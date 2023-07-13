@@ -41,6 +41,7 @@ func InitServer(ctx context.Context, uc *usecase.UseCase) (*Server, error) {
 	}))
 
 	m.Router.Post("/api/register", h.RegisterUserHandler)
+	m.Router.Post("/api/login", h.LoginUserHandler)
 
 	m.Router.Get("/swagger/*", httpSwagger.WrapHandler)
 
