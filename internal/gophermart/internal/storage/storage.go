@@ -15,11 +15,6 @@ import (
 
 type DBStorage struct{}
 
-func (s DBStorage) InitStorage() error {
-	//TODO implement me
-	panic("implement me")
-}
-
 var s = DBStorage{}
 
 func GetStorage() DBStorage {

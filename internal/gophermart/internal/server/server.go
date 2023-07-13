@@ -13,11 +13,9 @@ import (
 
 type Server struct {
 	Router *chi.Mux
-	//Storage storage.DBStorage
 }
 
 func middlewares(h http.HandlerFunc) http.HandlerFunc {
-	//return middleware.AuthMiddleware(middleware.WithLogging(middleware.GzipMiddleware(h)))
 	return middleware.AuthMiddleware(h)
 }
 
