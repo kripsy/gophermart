@@ -10,6 +10,16 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title Swagger API Gophermart
+// @version 1.0
+// @description This is a swagger server for Gophermart Auth server.
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host 127.0.0.1:8080
+// @BasePath /
+
 func main() {
 
 	application, err := application.NewApp(context.Background())
