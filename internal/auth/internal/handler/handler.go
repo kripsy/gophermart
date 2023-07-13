@@ -104,7 +104,12 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	token, expTime, err := h.uc.LoginUser(h.ctx, user.Username, user.Password)
 
 	if err != nil {
-		// check error: may be 401?
+		var userLoginError *models.UserLoginError
+		if errors.As(err, &userLoginError) {
+			l.Error("error login user", zap.String("msg", err.Error()))
+			http.Error(w, "", http.StatusUnauthorized)
+			return
+		}
 		l.Error("error login user", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return

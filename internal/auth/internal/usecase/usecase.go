@@ -104,7 +104,7 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 
 	l.Debug("start LoginUser in UseCase")
 
-	hashPassword, err := uc.db.GetUserHashPassword(ctx, username)
+	userID, hashPassword, err := uc.db.GetUserHashPassword(ctx, username)
 	if err != nil {
 		l.Error("error GetUserHashPassword in LoginUser", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
@@ -113,9 +113,14 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 	err = utils.IsPasswordCorrect(ctx, []byte(password), []byte(hashPassword))
 	if err != nil {
 		l.Debug("password incorrect", zap.String("msg", err.Error()))
-		return "", time.Time{}, err
+		return "", time.Time{}, models.NewUserLoginError(username)
 	}
 
+	tokenString, expAt, err := utils.BuildJWTString(ctx, userID, username, uc.cfg.SecretKey, uc.cfg.TokenExp)
+	if err != nil {
+		l.Error("error BuildJWTString", zap.String("msg", err.Error()))
+		return "", time.Time{}, err
+	}
 	l.Debug("success login user", zap.String("msg", username))
-	return "", time.Time{}, err
+	return tokenString, expAt, nil
 }
