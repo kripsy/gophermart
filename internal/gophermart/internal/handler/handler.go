@@ -1,0 +1,122 @@
+package handler
+
+import (
+	"context"
+	"fmt"
+	"io"
+	"net/http"
+	"strconv"
+
+	con "github.com/gorilla/context"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/storage"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/utils"
+	"go.uber.org/zap"
+)
+
+type Handler struct {
+	ctx context.Context
+}
+
+func InitHandler(ctx context.Context) (*Handler, error) {
+	h := &Handler{
+		ctx: ctx,
+	}
+	return h, nil
+}
+
+func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+	l.Info("CreateOrderHandler")
+	userName := con.Get(r, "userName")
+
+	//401 — пользователь не аутентифицирован;
+	if userName == nil {
+		l.Error("ERROR User is Unauthorized")
+		rw.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	//400 — неверный формат запроса;
+	byteNumber, err := io.ReadAll(r.Body)
+	if err != nil {
+		l.Error("ERROR Can't get value from body.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	number, err := strconv.Atoi(string(byteNumber))
+	if err != nil {
+		l.Error("ERROR Can't get value from body.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	//422 — неверный формат номера заказа;
+	if !utils.LuhnValid(number) {
+		l.Debug("ERROR invalid order number format.")
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	getStorage := storage.GetStorage()
+	order, err := getStorage.PutOrder(h.ctx, userName, number)
+
+	//500 — внутренняя ошибка сервера.
+	if err != nil {
+		l.Error("ERROR DB.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	//409 — номер заказа уже был загружен другим пользователем;
+	if order.UserName != userName {
+		l.Error("ERROR the order number has already been uploaded by another user.")
+		rw.WriteHeader(http.StatusConflict)
+		return
+	}
+
+	fmt.Println(order, err)
+	// TODO тут создаем значение в базе и сразу возвращаем его в код
+
+	//200 — номер заказа уже был загружен этим пользователем;
+	if order.Status != "NEW" {
+		l.Error("ERROR the order number has already been uploaded by another user.")
+		rw.WriteHeader(http.StatusConflict)
+		return
+	}
+	//202 — новый номер заказа принят в обработку;
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
+
+	//fmt.Println(bodyBytes)
+
+}
+
+func (h *Handler) ReadOrdersHandler(w http.ResponseWriter, r *http.Request) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (h *Handler) ReadUserBalanceHandler(w http.ResponseWriter, r *http.Request) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (h *Handler) CreateWithdrawHandler(w http.ResponseWriter, r *http.Request) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (h *Handler) ReadWithdrawsTestHandler(w http.ResponseWriter, r *http.Request) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+	l.Debug("TestHandler")
+	w.Header().Add("Content-Type", "plain/text")
+	w.Write([]byte("Hello world"))
+}

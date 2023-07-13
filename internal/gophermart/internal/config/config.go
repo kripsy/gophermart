@@ -11,6 +11,12 @@ type Config struct {
 	LoggerLevel     string
 }
 
+var cfg = &Config{}
+
+func GetConfig() *Config {
+	return cfg
+}
+
 func InitConfig() *Config {
 	runAddress := flag.String(
 		"a",
@@ -41,9 +47,11 @@ func InitConfig() *Config {
 		*loggerLevel = "Warn"
 	}
 
-	return &Config{
+	cfg = &Config{
 		RunAddress:      *runAddress,
 		DatabaseAddress: *databaseAddress,
 		LoggerLevel:     *loggerLevel,
 	}
+
+	return cfg
 }
