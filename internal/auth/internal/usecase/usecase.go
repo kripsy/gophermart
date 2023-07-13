@@ -5,7 +5,9 @@ package usecase
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/kripsy/gophermart/internal/auth/internal/config"
@@ -95,4 +97,30 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 		return "", time.Time{}, err
 	}
 	return tokenString, expAt, nil
+}
+
+func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (string, time.Time, error) {
+	l := logger.LoggerFromContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, 400*time.Millisecond)
+	defer cancel()
+
+	l.Debug("start LoginUser in UseCase")
+
+	hash, err := utils.GetHash(ctx, password)
+	hexPwd := make([]byte, hex.EncodedLen(len(hash)))
+	hex.Encode(hexPwd, hash)
+
+	fmt.Println(string(hexPwd))
+	if err != nil {
+		l.Error("error GetHash in LoginUser", zap.String("msg", err.Error()))
+		return "", time.Time{}, err
+	}
+	userID, err := uc.db.CompareUserPwd(ctx, username, hash)
+	if err != nil {
+		l.Error("error CompareUserPwd in LoginUser", zap.String("msg", err.Error()))
+		return "", time.Time{}, err
+	}
+
+	l.Debug("success login userID ->", zap.Int("msg", userID))
+	return "", time.Time{}, err
 }

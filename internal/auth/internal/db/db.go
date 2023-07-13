@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -187,4 +188,54 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 	tx.Commit()
 	l.Debug("success commit getNextUserID")
 	return nextID, nil
+}
+
+func (db *DB) CompareUserPwd(ctx context.Context, username string, hashPassword []byte) (int, error) {
+	l := logger.LoggerFromContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	l.Debug("start CompareUserPwd")
+
+	tx, err := db.DB.Begin()
+	if err != nil {
+		l.Error("failed to Begin Tx in IsUserExists", zap.String("msg", err.Error()))
+		return 0, err
+	}
+
+	defer tx.Rollback()
+
+	var userID int
+	queryBuilder := squirrel.Select("id").
+		From("users").
+		Where(
+			squirrel.And{
+				squirrel.Eq{"username": username},
+				squirrel.Eq{"password": hashPassword},
+			}).
+		PlaceholderFormat(squirrel.Dollar)
+	bsql, args, err := queryBuilder.ToSql()
+
+	if err != nil {
+		l.Error("failed to build sql in IsUserExists", zap.String("msg", err.Error()))
+		return 0, err
+	}
+
+	l.Debug("success build sql", zap.String("msg", bsql))
+
+	row := tx.QueryRowContext(ctx, bsql, args...)
+
+	err = row.Scan(&userID)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			l.Debug("error compare username and pwd", zap.String("msg", username))
+			return 0, fmt.Errorf("error compare username and pwd")
+		}
+		l.Error("failed scan userExists", zap.String("msg", err.Error()))
+		return 0, err
+	}
+
+	l.Debug("success login. userID ->", zap.Int("msg", userID))
+	tx.Commit()
+	return userID, nil
 }

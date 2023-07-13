@@ -27,6 +27,7 @@ func InitServer(ctx context.Context, uc *usecase.UseCase) (*Server, error) {
 
 	m.Router.HandleFunc("/test", h.TestHandler)
 	m.Router.Post("/api/register", h.RegisterUserHandler)
+	m.Router.Post("/api/login", h.LoginUserHandler)
 
 	return m, nil
 }

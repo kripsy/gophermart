@@ -77,3 +77,41 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
+// LoginUserHandler accepts a username and password in json format.
+// If we have success  user login, we insert token into cookie `token` and header `Authorization`.
+func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+
+	l.Debug("LoginUserHandler")
+	body, err := io.ReadAll(r.Body)
+	err = r.Body.Close()
+	if err != nil {
+		l.Debug("error close body", zap.String("msg", err.Error()))
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	user, err := models.InitNewUser(body)
+	if err != nil {
+		l.Debug("error init model of user from request", zap.String("msg", err.Error()))
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+
+	l.Debug("init new user from body in LoginUserHandler", zap.String("msg", user.Username))
+
+	token, expTime, err := h.uc.LoginUser(h.ctx, user.Username, user.Password)
+
+	if err != nil {
+		// check error: may be 401?
+		l.Error("error login user", zap.String("msg", err.Error()))
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	utils.AddToken(w, token, expTime)
+	w.WriteHeader(http.StatusOK)
+}
