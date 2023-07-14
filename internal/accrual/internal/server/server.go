@@ -24,9 +24,9 @@ func InitServer(ctx context.Context) (*Server, error) {
 		return nil, err
 	}
 
-	m.Router.Get("/api/orders/{}", h.ReadWithdrawsTestHandler) // получение информации о расчёте начислений баллов лояльности;
-	m.Router.Post("/api/orders", h.ReadWithdrawsTestHandler)   // регистрация нового совершённого заказа;
-	m.Router.Post("/api/goods", h.ReadWithdrawsTestHandler)    // регистрация информации о новой механике вознаграждения за товар.
+	m.Router.Get("/api/orders/{number}", h.ReadOrdersHandler) // получение информации о расчёте начислений баллов лояльности;
+	m.Router.Post("/api/orders", h.CreateOrderHandler)        // регистрация нового совершённого заказа;
+	m.Router.Post("/api/goods", h.CreateGoodsHandler)         // регистрация информации о новой механике вознаграждения за товар.
 	m.Router.HandleFunc("/test", h.TestHandler)
 
 	return m, nil

@@ -28,17 +28,7 @@ func (h *Handler) ReadOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }
 
-func (h *Handler) ReadUserBalanceHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) CreateWithdrawHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) ReadWithdrawsTestHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateGoodsHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO implement me
 	panic("implement me")
 }
