@@ -13,3 +13,22 @@ build_docker_accrual:
 .PHONY: build_docker_gophermart
 build_docker_gophermart:
 	docker build --tag docker-gophermart -f ./Dockerfiles/gophermart/Dockerfile .
+
+
+
+
+.PHONY: build
+build: build_auth build_accrual build_gophermart
+
+
+.PHONY: build_auth
+build_auth:
+	go build -o ./bin/auth ./cmd/auth/main.go
+
+.PHONY: build_accrual
+build_accrual:
+	go build -o ./bin/accrual ./cmd/accrual/main.go
+
+.PHONY: build_gophermart
+build_gophermart:
+	go build -o ./bin/gophermart ./cmd/gophermart/main.go

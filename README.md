@@ -11,6 +11,10 @@
 1. In ./krakend/config/krakend.json change backend.host to `http://docker.for.mac.localhost:portServices` if you use mac.
 2. Start services as `go run ./cmd/auth/main.go -l "Debug" -a "127.0.0.1:8081"`
 
+# for build apps:
+
+1. run `make build` in root directory
+
 # swag
 
 1. go to root folder project
