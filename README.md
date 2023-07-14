@@ -1,8 +1,8 @@
-# Build docker images
+# Start app
 
-1. docker build --tag docker-auth -f ./Dockerfiles/auth/Dockerfile .
-2. docker build --tag docker-gophermart -f ./Dockerfiles/gophermart/Dockerfile .
-3. docker build --tag docker-accrual -f ./Dockerfiles/accrual/Dockerfile .
+1. make build_docker
+2. docker-compose up
+3. Enjoy ;)
 
 # krakenD
 
