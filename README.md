@@ -1,3 +1,9 @@
+# Build docker images
+
+1. docker build --tag docker-auth -f ./Dockerfiles/auth/Dockerfile .
+2. docker build --tag docker-gophermart -f ./Dockerfiles/gophermart/Dockerfile .
+3. docker build --tag docker-accrual -f ./Dockerfiles/accrual/Dockerfile .
+
 # krakenD
 
 ## If you exec app services not in docker for mac:
