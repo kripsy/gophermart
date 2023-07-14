@@ -12,8 +12,8 @@ func AuthMiddleware(h http.HandlerFunc) http.HandlerFunc {
 
 		// TODO add AuthMiddleware
 
-		context.Set(r, "userName", "userName")
-		//context.Set(r, "userName", nil)
+		context.Set(r, "username", "username")
+		//context.Set(r, "username", nil)
 		h.ServeHTTP(ow, r)
 	}
 }

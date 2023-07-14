@@ -27,10 +27,10 @@ func InitHandler(ctx context.Context) (*Handler, error) {
 func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
 	l.Info("CreateOrderHandler")
-	userName := con.Get(r, "userName")
+	username := con.Get(r, "username")
 
 	//401 — пользователь не аутентифицирован;
-	if userName == nil {
+	if username == nil {
 		l.Error("ERROR User is Unauthorized")
 		rw.WriteHeader(http.StatusUnauthorized)
 		return
@@ -59,7 +59,7 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	getStorage := storage.GetStorage()
-	order, err := getStorage.PutOrder(h.ctx, userName, number)
+	order, err := getStorage.PutOrder(h.ctx, username, number)
 
 	//500 — внутренняя ошибка сервера.
 	if err != nil {
@@ -69,7 +69,7 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	//409 — номер заказа уже был загружен другим пользователем;
-	if order.UserName != userName {
+	if order.UserName != username {
 		l.Error("ERROR the order number has already been uploaded by another user.")
 		rw.WriteHeader(http.StatusConflict)
 		return
@@ -112,5 +112,8 @@ func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
 	l.Debug("TestHandler")
 	w.Header().Add("Content-Type", "plain/text")
-	w.Write([]byte("Hello world"))
+	_, err := w.Write([]byte("Hello world"))
+	if err != nil {
+		return
+	}
 }
