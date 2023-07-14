@@ -7,8 +7,8 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/kripsy/gophermart/internal/auth/internal/handler"
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
-  "github.com/kripsy/gophermart/internal/auth/internal/usecase"
-  httpSwagger "github.com/swaggo/http-swagger"
+	"github.com/kripsy/gophermart/internal/auth/internal/usecase"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 
 	_ "github.com/kripsy/gophermart/docs/auth"

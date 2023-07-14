@@ -2,15 +2,21 @@ package server
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/kripsy/gophermart/internal/gophermart/handler"
+	"github.com/kripsy/gophermart/cmd/gophermart/middleware"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/handler"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"go.uber.org/zap"
 )
 
 type Server struct {
 	Router *chi.Mux
+}
+
+func middlewares(h http.HandlerFunc) http.HandlerFunc {
+	return middleware.AuthMiddleware(h)
 }
 
 func InitServer(ctx context.Context) (*Server, error) {
@@ -24,7 +30,7 @@ func InitServer(ctx context.Context) (*Server, error) {
 		return nil, err
 	}
 
-	m.Router.Post("/api/user/orders", h.CreateOrderHandler)              // загрузка пользователем номера заказа для расчёта;
+	m.Router.Post("/api/user/orders", middlewares(h.CreateOrderHandler)) // загрузка пользователем номера заказа для расчёта;
 	m.Router.Get("/api/user/orders", h.ReadOrdersHandler)                // получение списка загруженных пользователем номеров заказов, статусов их обработки и информации о начислениях;
 	m.Router.Get("/api/user/balance", h.ReadUserBalanceHandler)          // получение текущего баланса счёта баллов лояльности пользователя;
 	m.Router.Post("/api/user/balance/withdraw", h.CreateWithdrawHandler) // запрос на списание баллов с накопительного счёта в счёт оплаты нового заказа;
