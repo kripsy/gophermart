@@ -43,7 +43,22 @@
                 {
                     "url_pattern": "/api/login",
                     "host": [
-                        "http://localhost:8000"
+                        "http://gophermarket_auth:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/user/register",
+            "output_encoding": "no-op",
+            "method": "POST",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/register",
+                    "host": [
+                        "http://gophermarket_auth:8080"
                     ],
                     "encoding": "no-op"
                 }

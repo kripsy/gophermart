@@ -1,8 +1,25 @@
 version: '3.7'
 
 services:
-  postgres_db:
+
+
+  gophermarket_auth:
+    image: docker-auth
+    container_name: gophermarket_auth
+    restart: always
+    environment:
+      - RUN_ADDRESS=gophermarket_auth:8080
+      - DATABASE_URI=postgres://gophermart:RASKkCt3PVEU@gophermarket_postgres_db:5432/gophermart?sslmode=disable
+      - LOGGER_LEVEL=Debug
+      - MIGRATIONS_PATH_AUTH=./db/auth/migrations
+    depends_on:
+      - gophermarket_postgres_db
+      - gophermarket_krakend_ce
+     
+
+  gophermarket_postgres_db:
     image: postgres:15.3
+    container_name: gophermarket_postgres_db
     restart: always
     environment:
       - POSTGRES_PASSWORD=RASKkCt3PVEU
@@ -13,14 +30,17 @@ services:
       - 5432:5432
     volumes:
       - pg_data:/var/lib/postgresql/data  
+    
 
-  krakend_ce:
+  gophermarket_krakend_ce:
     image: devopsfaith/krakend:latest
+    container_name: gophermarket_krakend_ce
     volumes:
       - ./krakend/config:/etc/krakend
     ports:
       - "8080:8080"
     command: ["run", "-d", "-c", "/etc/krakend/krakend.json"]
+    
 
 volumes:
   pg_data: {}

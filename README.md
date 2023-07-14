@@ -1,7 +1,15 @@
+# krakenD
+
+## If you exec app services not in docker for mac:
+
+1. In ./krakend/config/krakend.json change backend.host to `http://docker.for.mac.localhost:portServices` if you use mac.
+2. Start services as `go run ./cmd/auth/main.go -l "Debug" -a "127.0.0.1:8081"`
+
 # swag
 
 1. go to root folder project
 2. exec `~/go/bin/swag init -g "cmd/auth/main.go" -o "docs/auth/"`
+3. swagger on page `/swagger/index.html`
 
 # create new migration
 

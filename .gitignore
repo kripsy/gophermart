@@ -16,6 +16,7 @@ cmd/gophermart/main
 cmd/gophermart/gophermart
 cmd/accrual/main
 cmd/accrual/accrual
+bin
 
 # Dependency directories (remove the comment below to include it)
 vendor/
