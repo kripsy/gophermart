@@ -77,8 +77,9 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ReadOrdersHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
+	l := logger.LoggerFromContext(h.ctx)
+	l.Info("CreateOrderHandler")
+
 }
 
 func (h *Handler) CreateGoodsHandler(w http.ResponseWriter, r *http.Request) {
