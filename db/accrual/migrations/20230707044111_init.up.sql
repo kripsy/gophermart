@@ -2,8 +2,8 @@ begin transaction;
 
 create table if not exists public.accrual
 (
-    id           bigserial primary key       not null,
-    number       bigint                     not null unique,
+    id           bigserial primary key    not null,
+    number       bigint                   not null unique,
     status       text,
     accrual      int,
     uploaded_at  timestamp with time zone not null default now(),
@@ -11,7 +11,7 @@ create table if not exists public.accrual
 );
 
 create function accrual_check_update() returns trigger AS
-    $emp_stamp$
+$emp_stamp$
 begin
     NEW.processed_at := current_timestamp;
     return NEW;
