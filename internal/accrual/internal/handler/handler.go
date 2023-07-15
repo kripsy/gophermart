@@ -41,6 +41,5 @@ func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("Hello world"))
 	if err != nil {
 		l.Error("Error w.Write([]byte", zap.String("msg", err.Error()))
-		return
 	}
 }
