@@ -73,7 +73,12 @@ func (db *DB) RegisterUser(ctx context.Context, username, hashPassword string, i
 		return err
 	}
 
-	defer tx.Rollback()
+	defer func(tx *sql.Tx) {
+		err := tx.Rollback()
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+	}(tx)
 
 	queryBuilder := squirrel.
 		Insert("users").
@@ -96,7 +101,10 @@ func (db *DB) RegisterUser(ctx context.Context, username, hashPassword string, i
 		return err
 	}
 
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
 	l.Debug("success commit RegisterUser")
 	return nil
 }
@@ -113,7 +121,12 @@ func (db *DB) IsUserExists(ctx context.Context, username string) (bool, error) {
 		return false, err
 	}
 
-	defer tx.Rollback()
+	defer func(tx *sql.Tx) {
+		err := tx.Rollback()
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+	}(tx)
 
 	var userExists bool
 	queryBuilder := squirrel.Select("1").
@@ -140,7 +153,11 @@ func (db *DB) IsUserExists(ctx context.Context, username string) (bool, error) {
 		return false, err
 	}
 	l.Debug("success scan userExists, value ->", zap.Bool("msg", userExists))
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		l.Error("Error tx.Commit()", zap.String("msg", err.Error()))
+		return false, err
+	}
 	return userExists, nil
 }
 
@@ -156,7 +173,12 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 		return 0, err
 	}
 
-	defer tx.Rollback()
+	defer func(tx *sql.Tx) {
+		err := tx.Rollback()
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+	}(tx)
 
 	queryBuilder := squirrel.
 		Select("MAX(id)+1").
@@ -186,7 +208,11 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 		return 0, err
 	}
 
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		return 0, err
+	}
 	l.Debug("success commit getNextUserID")
 	if !nextID.Valid {
 		return 1, nil
@@ -206,7 +232,12 @@ func (db *DB) GetUserHashPassword(ctx context.Context, username string) (int, st
 		return 0, "", err
 	}
 
-	defer tx.Rollback()
+	defer func(tx *sql.Tx) {
+		err := tx.Rollback()
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+	}(tx)
 
 	var userID int
 	var hashPassword string
@@ -237,6 +268,9 @@ func (db *DB) GetUserHashPassword(ctx context.Context, username string) (int, st
 	}
 
 	l.Debug("success get hash password ->", zap.String("msg", hashPassword))
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return 0, "", err
+	}
 	return userID, hashPassword, nil
 }

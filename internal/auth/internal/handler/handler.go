@@ -30,7 +30,11 @@ func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
 	l.Debug("TestHandler")
 	w.Header().Add("Content-Type", "plain/text")
-	w.Write([]byte("Hello world"))
+	_, err := w.Write([]byte("Hello world"))
+	if err != nil {
+		l.Error("Error w.Write([]byte", zap.String("msg", err.Error()))
+		return
+	}
 }
 
 // ShowAccount godoc
@@ -52,6 +56,11 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	isUniqueError := false
 	l.Debug("RegisterUserHandler")
 	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		l.Error("error read from body", zap.String("msg", err.Error()))
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
 	err = r.Body.Close()
 	if err != nil {
 		l.Debug("error close body", zap.String("msg", err.Error()))
@@ -85,7 +94,11 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	if isUniqueError {
 		w.WriteHeader(http.StatusConflict)
 	} else {
-		utils.AddToken(w, token, expTime)
+		err := utils.AddToken(w, token, expTime)
+		if err != nil {
+			// TODO add error handling
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -97,6 +110,11 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	l.Debug("LoginUserHandler")
 	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		l.Error("error read from body", zap.String("msg", err.Error()))
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
 	err = r.Body.Close()
 	if err != nil {
 		l.Debug("error close body", zap.String("msg", err.Error()))
@@ -129,6 +147,10 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Add("Content-Type", "application/json")
-	utils.AddToken(w, token, expTime)
+	err = utils.AddToken(w, token, expTime)
+	if err != nil {
+		// TODO add error handling
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }

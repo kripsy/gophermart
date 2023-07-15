@@ -19,7 +19,12 @@ func main() {
 		os.Exit(1)
 	}
 	logger := application.GetAppLogger()
-	defer logger.Sync()
+	defer func(logger *zap.Logger) {
+		err := logger.Sync()
+		if err != nil {
+			logger.Error("Error logger.Sync()", zap.String("msg", err.Error()))
+		}
+	}(logger)
 	loggerLevel, runAddress, dbURI := application.GetAppConfig()
 	logger.Info("LOGGER_LEVEL", zap.String("msg", loggerLevel))
 	logger.Info("RUN_ADDRESS", zap.String("msg", runAddress))
