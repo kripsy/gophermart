@@ -44,7 +44,7 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	number, err := strconv.Atoi(string(byteNumber))
+	number, err := strconv.ParseInt(string(byteNumber), 10, 64)
 	if err != nil {
 		l.Error("ERROR Can't get value from body.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusBadRequest)

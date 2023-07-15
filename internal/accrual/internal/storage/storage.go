@@ -5,9 +5,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/kripsy/gophermart/internal/gophermart/internal/config"
-	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
-	"github.com/kripsy/gophermart/internal/gophermart/internal/models"
+	"github.com/kripsy/gophermart/internal/accrual/internal/config"
+	"github.com/kripsy/gophermart/internal/accrual/internal/logger"
+	"github.com/kripsy/gophermart/internal/accrual/internal/models"
 	"go.uber.org/zap"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -21,7 +21,7 @@ func GetStorage() DBStorage {
 	return s
 }
 
-func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number int64) (models.Order, error) {
+func (s *DBStorage) PutOrder(ctx context.Context, number int64) (models.Order, error) {
 
 	l := logger.LoggerFromContext(ctx)
 	l.Info("PutOrder")
@@ -35,14 +35,13 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	defer conn.Close(ctx)
 
 	var ID int64
-	var UserName string
 	var Number int64
 	var Status string
 	var Accural int
 	var UploadedAt pgtype.Timestamptz
 	var ProcessedAt pgtype.Timestamptz
 
-	err = conn.QueryRow(ctx, "INSERT INTO public.gophermart_order (username, number, status) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING gophermart_order.id, gophermart_order.username, gophermart_order.number, gophermart_order.status, gophermart_order.accrual, gophermart_order.uploaded_at, gophermart_order.processed_at;", userName, number, models.StatusNew).Scan(&ID, &UserName, &Number, &Status, &Accural, &UploadedAt, &ProcessedAt)
+	err = conn.QueryRow(ctx, "INSERT INTO public.accrual (number, status, accrual) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING accrual.id, accrual.number, accrual.status, accrual.accrual, accrual.uploaded_at, accrual.processed_at;", number, models.StatusProcessed, number%1000).Scan(&ID, &Number, &Status, &Accural, &UploadedAt, &ProcessedAt)
 	if err != nil {
 		return models.Order{}, err
 	}
@@ -50,7 +49,6 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	order := models.Order{}
 
 	order.ID = ID
-	order.UserName = UserName
 	order.Number = Number
 	order.Status = Status
 	order.Accural = Accural
