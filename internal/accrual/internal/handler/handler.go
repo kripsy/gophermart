@@ -83,16 +83,16 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
 	l.Info("ReadOrdersHandler")
 
-	url_number := chi.URLParam(r, "number")
+	urlNumber := chi.URLParam(r, "number")
 
 	//400 — неверный формат запроса;
-	if url_number == "" {
+	if urlNumber == "" {
 		l.Error("ERROR number is empty.")
 		rw.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	number, err := strconv.ParseInt(url_number, 10, 64)
+	number, err := strconv.ParseInt(urlNumber, 10, 64)
 	if err != nil {
 		l.Error("ERROR invalid order number format.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusNoContent)
@@ -106,10 +106,14 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO посмотри мое разделение server/handler/usecase/database.
+	// В твоем случае у тебя раздутые handler, сложно читать.
+	// Да и за бизнес-логику (неверный формат номера) лучше пусть отвечает слой usecase.
 	getStorage := storage.GetStorage()
 	order, err := getStorage.GetOrder(h.ctx, number)
 
 	// 204 — заказ не зарегистрирован в системе расчёта.
+	// TODO я бы ошибки уровня БД ловил и прокидывал бы "свои" ошибки из models. На уровне  usecase/handler это намного удобнее.
 	if errors.Is(err, pgx.ErrNoRows) {
 		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusNoContent)
