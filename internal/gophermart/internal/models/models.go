@@ -7,7 +7,7 @@ type Order struct {
 	UserName    string
 	Number      int64
 	Status      string
-	Accural     int
+	Accrual     int
 	UploadedAt  pgtype.Timestamptz
 	ProcessedAt pgtype.Timestamptz
 }

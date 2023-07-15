@@ -4,7 +4,7 @@ import "github.com/jackc/pgx/v5/pgtype"
 
 type RequestOrder struct {
 	Number string         `json:"order"`
-	Status []RequestGoods `json:"goods"`
+	Goods  []RequestGoods `json:"goods"`
 }
 
 type RequestGoods struct {
@@ -17,7 +17,7 @@ type Order struct {
 	UserName    string
 	Number      int64
 	Status      string
-	Accural     int
+	Accrual     int
 	UploadedAt  pgtype.Timestamptz
 	ProcessedAt pgtype.Timestamptz
 }

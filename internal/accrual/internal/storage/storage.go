@@ -37,11 +37,11 @@ func (s *DBStorage) PutOrder(ctx context.Context, number int64) (models.Order, e
 	var ID int64
 	var Number int64
 	var Status string
-	var Accural int
+	var Accrual int
 	var UploadedAt pgtype.Timestamptz
 	var ProcessedAt pgtype.Timestamptz
 
-	err = conn.QueryRow(ctx, "INSERT INTO public.accrual (number, status, accrual) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING accrual.id, accrual.number, accrual.status, accrual.accrual, accrual.uploaded_at, accrual.processed_at;", number, models.StatusProcessed, number%1000).Scan(&ID, &Number, &Status, &Accural, &UploadedAt, &ProcessedAt)
+	err = conn.QueryRow(ctx, "INSERT INTO public.accrual (number, status, accrual) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING accrual.id, accrual.number, accrual.status, accrual.accrual, accrual.uploaded_at, accrual.processed_at;", number, models.StatusProcessed, number%1000).Scan(&ID, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
 	if err != nil {
 		return models.Order{}, err
 	}
@@ -51,7 +51,7 @@ func (s *DBStorage) PutOrder(ctx context.Context, number int64) (models.Order, e
 	order.ID = ID
 	order.Number = Number
 	order.Status = Status
-	order.Accural = Accural
+	order.Accrual = Accrual
 	order.UploadedAt = UploadedAt
 	order.ProcessedAt = ProcessedAt
 
