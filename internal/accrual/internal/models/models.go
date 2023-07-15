@@ -14,12 +14,17 @@ type RequestGoods struct {
 
 type Order struct {
 	ID          int64
-	UserName    string
 	Number      int64
 	Status      string
 	Accrual     int
 	UploadedAt  pgtype.Timestamptz
 	ProcessedAt pgtype.Timestamptz
+}
+
+type ResponseOrder struct {
+	Number  string `json:"order"`
+	Status  string `json:"status"`
+	Accrual int    `json:"accrual"`
 }
 
 const (

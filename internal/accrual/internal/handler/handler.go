@@ -3,9 +3,12 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 	"github.com/kripsy/gophermart/internal/accrual/internal/logger"
 	"github.com/kripsy/gophermart/internal/accrual/internal/models"
 	"github.com/kripsy/gophermart/internal/accrual/internal/storage"
@@ -76,9 +79,64 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *Handler) ReadOrdersHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
+func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+	l.Info("ReadOrdersHandler")
+
+	urlNumber := chi.URLParam(r, "number")
+
+	//400 — неверный формат запроса;
+	if urlNumber == "" {
+		l.Error("ERROR number is empty.")
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	number, err := strconv.ParseInt(urlNumber, 10, 64)
+	if err != nil {
+		l.Error("ERROR invalid order number format.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	//422 — неверный формат номера заказа;
+	if !utils.LuhnValid(number) {
+		l.Error("ERROR invalid order number format.")
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	// TODO посмотри мое разделение server/handler/usecase/database.
+	// В твоем случае у тебя раздутые handler, сложно читать.
+	// Да и за бизнес-логику (неверный формат номера) лучше пусть отвечает слой usecase.
+	getStorage := storage.GetStorage()
+	order, err := getStorage.GetOrder(h.ctx, number)
+
+	// 204 — заказ не зарегистрирован в системе расчёта.
+	// TODO я бы ошибки уровня БД ловил и прокидывал бы "свои" ошибки из models. На уровне  usecase/handler это намного удобнее.
+	if errors.Is(err, pgx.ErrNoRows) {
+		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusNoContent)
+	}
+
+	//500 — внутренняя ошибка сервера.
+	if err != nil {
+		l.Error("ERROR DB.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp := models.ResponseOrder{}
+
+	resp.Number = strconv.FormatInt(order.Number, 10)
+	resp.Status = order.Status
+	resp.Accrual = order.Accrual
+
+	enc := json.NewEncoder(rw)
+	if err := enc.Encode(resp); err != nil {
+		l.Error("error encoding response", zap.String("msg", err.Error()))
+		return
+	}
 }
 
 func (h *Handler) CreateGoodsHandler(w http.ResponseWriter, r *http.Request) {

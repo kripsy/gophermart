@@ -57,3 +57,40 @@ func (s *DBStorage) PutOrder(ctx context.Context, number int64) (models.Order, e
 
 	return order, nil
 }
+
+func (s *DBStorage) GetOrder(ctx context.Context, number int64) (models.Order, error) {
+
+	l := logger.LoggerFromContext(ctx)
+	l.Info("GetOrder")
+	cfg := config.GetConfig()
+
+	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	if err != nil {
+		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
+		return models.Order{}, err
+	}
+	defer conn.Close(ctx)
+
+	var ID int64
+	var Number int64
+	var Status string
+	var Accrual int
+	var UploadedAt pgtype.Timestamptz
+	var ProcessedAt pgtype.Timestamptz
+
+	err = conn.QueryRow(ctx, "select * from public.accrual where number=$1;", number).Scan(&ID, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+	if err != nil {
+		return models.Order{}, err
+	}
+
+	order := models.Order{}
+
+	order.ID = ID
+	order.Number = Number
+	order.Status = Status
+	order.Accrual = Accrual
+	order.UploadedAt = UploadedAt
+	order.ProcessedAt = ProcessedAt
+
+	return order, nil
+}
