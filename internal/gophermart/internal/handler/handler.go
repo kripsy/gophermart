@@ -53,7 +53,7 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 
 	//422 — неверный формат номера заказа;
 	if !utils.LuhnValid(number) {
-		l.Debug("ERROR invalid order number format.")
+		l.Error("ERROR invalid order number format.")
 		rw.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}

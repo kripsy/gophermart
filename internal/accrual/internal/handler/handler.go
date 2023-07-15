@@ -47,7 +47,7 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 
 	//422 — неверный формат номера заказа;
 	if !utils.LuhnValid(number) {
-		l.Debug("ERROR invalid order number format.")
+		l.Error("ERROR invalid order number format.")
 		rw.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
@@ -64,7 +64,7 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 
 	//409 — заказ уже принят в обработку;
 	if !order.ProcessedAt.Time.IsZero() {
-		l.Info("The order number has already been uploaded.")
+		l.Error("ERROR the order number has already been uploaded.")
 		rw.WriteHeader(http.StatusConflict)
 		return
 	}
