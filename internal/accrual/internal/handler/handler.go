@@ -100,11 +100,11 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	//422 — неверный формат номера заказа;
-	//if !utils.LuhnValid(number) {
-	//	l.Error("ERROR invalid order number format.")
-	//	rw.WriteHeader(http.StatusUnprocessableEntity)
-	//	return
-	//}
+	if !utils.LuhnValid(number) {
+		l.Error("ERROR invalid order number format.")
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
 
 	getStorage := storage.GetStorage()
 	order, err := getStorage.GetOrder(h.ctx, number)
