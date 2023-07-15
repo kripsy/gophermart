@@ -8,7 +8,6 @@ package logger
 
 import (
 	"context"
-	"fmt"
 
 	"go.uber.org/zap"
 )
@@ -45,16 +44,10 @@ func InitLogger(level string) (*zap.Logger, error) {
 
 	if err != nil {
 		return nil, err
-
 	}
 
 	log := zl
 	log.Info(`Logger level`, zap.String("logLevel", level))
-
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
 
 	return log, nil
 }

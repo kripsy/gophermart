@@ -1,9 +1,19 @@
+# Start app
+
+1. make build_docker
+2. docker-compose up
+3. Enjoy ;)
+
 # krakenD
 
 ## If you exec app services not in docker for mac:
 
 1. In ./krakend/config/krakend.json change backend.host to `http://docker.for.mac.localhost:portServices` if you use mac.
 2. Start services as `go run ./cmd/auth/main.go -l "Debug" -a "127.0.0.1:8081"`
+
+# for build apps:
+
+1. run `make build` in root directory
 
 # swag
 

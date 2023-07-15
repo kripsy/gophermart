@@ -2,6 +2,34 @@ version: '3.7'
 
 services:
 
+  gophermarket_gophermart:
+      image: docker-gophermart
+      container_name: gophermarket_gophermart
+      restart: always
+      environment:
+        - RUN_ADDRESS=gophermarket_gophermart:8080
+        - DATABASE_URI=postgres://gophermart:gophermartpwd@gophermarket_postgres_db:5432/gophermart?sslmode=disable
+        - LOGGER_LEVEL=Debug
+        - MIGRATIONS_PATH_AUTH=./db/gophermart/migrations
+      depends_on:
+        - gophermarket_postgres_db
+        - gophermarket_krakend_ce
+        - gophermarket_accrual
+
+
+  gophermarket_accrual:
+      image: docker-accrual
+      container_name: gophermarket_accrual
+      restart: always
+      environment:
+        - RUN_ADDRESS=gophermarket_accrual:8080
+        - DATABASE_URI=postgres://accrual:accrualpwd@gophermarket_postgres_db:5432/accrual?sslmode=disable
+        - LOGGER_LEVEL=Debug
+        - MIGRATIONS_PATH_AUTH=./db/accrual/migrations
+      depends_on:
+        - gophermarket_postgres_db
+        - gophermarket_krakend_ce
+
 
   gophermarket_auth:
     image: docker-auth
@@ -9,12 +37,14 @@ services:
     restart: always
     environment:
       - RUN_ADDRESS=gophermarket_auth:8080
-      - DATABASE_URI=postgres://gophermart:RASKkCt3PVEU@gophermarket_postgres_db:5432/gophermart?sslmode=disable
+      - DATABASE_URI=postgres://auth:authpwd@gophermarket_postgres_db:5432/auth?sslmode=disable
       - LOGGER_LEVEL=Debug
       - MIGRATIONS_PATH_AUTH=./db/auth/migrations
     depends_on:
       - gophermarket_postgres_db
       - gophermarket_krakend_ce
+      - gophermarket_accrual
+      - gophermarket_gophermart
      
 
   gophermarket_postgres_db:
@@ -29,7 +59,8 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - pg_data:/var/lib/postgresql/data  
+      - pg_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     
 
   gophermarket_krakend_ce:
