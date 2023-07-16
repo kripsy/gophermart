@@ -115,3 +115,45 @@ func (s *DBStorage) GetOrders(ctx context.Context, userName interface{}) ([]mode
 
 	return orders, nil
 }
+
+func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (models.ResponseBalance, error) {
+
+	l := logger.LoggerFromContext(ctx)
+	l.Info("PutOrder")
+	cfg := config.GetConfig()
+
+	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	if err != nil {
+		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
+		return models.ResponseBalance{}, err
+	}
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
+
+	var ID int64
+	var UserName string
+	var Current int
+	var Withdrawn int
+	var UploadedAt pgtype.Timestamptz
+	var ProcessedAt pgtype.Timestamptz
+
+	err = conn.QueryRow(ctx, "select * from public.gophermart_balance where username=$1;", userName).Scan(&ID, &UserName, &Current, &Withdrawn, &UploadedAt, &ProcessedAt)
+	if err != nil {
+		return models.ResponseBalance{}, err
+	}
+
+	balance := models.ResponseBalance{}
+
+	balance.ID = ID
+	balance.UserName = UserName
+	balance.Current = Current
+	balance.Withdrawn = Withdrawn
+	balance.UploadedAt = UploadedAt
+	balance.ProcessedAt = ProcessedAt
+
+	return balance, nil
+}

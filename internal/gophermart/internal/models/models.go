@@ -22,6 +22,15 @@ type ResponseOrder struct {
 	ProcessedAt pgtype.Timestamptz `json:"-"`
 }
 
+type ResponseBalance struct {
+	ID          int64              `json:"-"`
+	UserName    string             `json:"-"`
+	Current     int                `json:"current"`
+	Withdrawn   int                `json:"withdrawn"`
+	UploadedAt  pgtype.Timestamptz `json:"uploaded_at"`
+	ProcessedAt pgtype.Timestamptz `json:"-"`
+}
+
 const (
 	StatusNew        = "NEW"        // Заказ загружен в систему, но не попал в обработку;
 	StatusProcessing = "PROCESSING" // Вознаграждение за заказ рассчитывается;

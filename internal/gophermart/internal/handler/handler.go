@@ -129,9 +129,41 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) ReadUserBalanceHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
+func (h *Handler) ReadUserBalanceHandler(rw http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+	l.Info("CreateOrderHandler")
+	username := con.Get(r, "username")
+
+	//401 — пользователь не аутентифицирован;
+	if username == nil {
+		l.Error("ERROR User is Unauthorized")
+		rw.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	getStorage := storage.GetStorage()
+	balance, err := getStorage.GetBalance(h.ctx, username)
+
+	// 204 — заказ не зарегистрирован в системе расчёта.
+	if errors.Is(err, pgx.ErrNoRows) {
+		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusNoContent)
+	}
+
+	//500 — внутренняя ошибка сервера.
+	if err != nil {
+		l.Error("ERROR DB.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	enc := json.NewEncoder(rw)
+	if err := enc.Encode(balance); err != nil {
+		l.Error("ERROR encoding response.", zap.String("msg", err.Error()))
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) CreateWithdrawHandler(w http.ResponseWriter, r *http.Request) {
