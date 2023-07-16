@@ -31,7 +31,7 @@ func InitServer(ctx context.Context) (*Server, error) {
 	}
 
 	m.Router.Post("/api/user/orders", middlewares(h.CreateOrderHandler)) // загрузка пользователем номера заказа для расчёта;
-	m.Router.Get("/api/user/orders", h.ReadOrdersHandler)                // получение списка загруженных пользователем номеров заказов, статусов их обработки и информации о начислениях;
+	m.Router.Get("/api/user/orders", middlewares(h.ReadOrdersHandler))   // получение списка загруженных пользователем номеров заказов, статусов их обработки и информации о начислениях;
 	m.Router.Get("/api/user/balance", h.ReadUserBalanceHandler)          // получение текущего баланса счёта баллов лояльности пользователя;
 	m.Router.Post("/api/user/balance/withdraw", h.CreateWithdrawHandler) // запрос на списание баллов с накопительного счёта в счёт оплаты нового заказа;
 	m.Router.Get("/api/user/withdrawals", h.ReadWithdrawsTestHandler)    // получение информации о выводе средств с накопительного счёта пользователем.

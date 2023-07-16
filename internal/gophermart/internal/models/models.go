@@ -12,6 +12,23 @@ type Order struct {
 	ProcessedAt pgtype.Timestamptz
 }
 
+type ResponseOrder struct {
+	ID          int64              `json:"-"`
+	UserName    string             `json:"-"`
+	Number      string             `json:"order"`
+	Status      string             `json:"status"`
+	Accrual     int                `json:"accrual,omitempty"`
+	UploadedAt  pgtype.Timestamptz `json:"uploaded_at"`
+	ProcessedAt pgtype.Timestamptz `json:"-"`
+}
+
+//type ResponseOrder struct {
+//	Number     string `json:"order"`
+//	Status     string `json:"status"`
+//	Accrual    int    `json:"accrual"`
+//	UploadedAt int    `json:"uploaded_at"`
+//}
+
 const (
 	StatusNew        = "NEW"        // Заказ загружен в систему, но не попал в обработку;
 	StatusProcessing = "PROCESSING" // Вознаграждение за заказ рассчитывается;
