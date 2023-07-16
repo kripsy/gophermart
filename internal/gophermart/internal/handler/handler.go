@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -113,18 +112,21 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 		rw.WriteHeader(http.StatusNoContent)
 	}
 
-	//resp := orders //[]models.ResponseOrder{}
-
-	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusOK)
-
-	enc := json.NewEncoder(rw)
-	if err := enc.Encode(orders); err != nil {
-		//sugar.Debug("error encoding response", zap.Error(err))
+	//500 — внутренняя ошибка сервера.
+	if err != nil {
+		l.Error("ERROR DB.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Println(orders, err)
+	enc := json.NewEncoder(rw)
+	if err := enc.Encode(orders); err != nil {
+		l.Error("ERROR encoding response.", zap.String("msg", err.Error()))
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) ReadUserBalanceHandler(w http.ResponseWriter, r *http.Request) {
