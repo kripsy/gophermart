@@ -189,27 +189,34 @@ func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	number, err := strconv.ParseInt(req.Number, 10, 64)
+	if err != nil {
+		l.Error("ERROR Can't get value from body.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	//422 — неверный формат номера заказа;
-	if !utils.LuhnValid(req.Number) {
+	if !utils.LuhnValid(number) {
 		l.Error("ERROR invalid order number format.")
 		rw.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 
 	getStorage := storage.GetStorage()
-	err := getStorage.PutWithdraw(h.ctx, username, req.Number, req.Accrual)
+	err = getStorage.PutWithdraw(h.ctx, username, number, req.Accrual)
+
+	//402 — на счету недостаточно средств;
+	if errors.Is(err, pgx.ErrNoRows) {
+		l.Error("ERROR there are not enough funds in the account.")
+		rw.WriteHeader(http.StatusPaymentRequired)
+		return
+	}
 
 	//500 — внутренняя ошибка сервера.
 	if err != nil {
 		l.Error("ERROR DB.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	//402 — на счету недостаточно средств;
-	if errors.Is(err, pgx.ErrNoRows) {
-		l.Error("ERROR there are not enough funds in the account.")
-		rw.WriteHeader(http.StatusConflict)
 		return
 	}
 
