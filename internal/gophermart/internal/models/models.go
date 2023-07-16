@@ -31,6 +31,11 @@ type ResponseBalance struct {
 	ProcessedAt pgtype.Timestamptz `json:"-"`
 }
 
+type RequestWithdraw struct {
+	Number  int64 `json:"order"`
+	Accrual int   `json:"sum"`
+}
+
 const (
 	StatusNew        = "NEW"        // Заказ загружен в систему, но не попал в обработку;
 	StatusProcessing = "PROCESSING" // Вознаграждение за заказ рассчитывается;

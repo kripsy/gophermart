@@ -11,6 +11,7 @@ import (
 	con "github.com/gorilla/context"
 	"github.com/jackc/pgx/v5"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/models"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/storage"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/utils"
 	"go.uber.org/zap"
@@ -93,7 +94,7 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
-	l.Info("CreateOrderHandler")
+	l.Info("ReadOrdersHandler")
 	username := con.Get(r, "username")
 
 	//401 — пользователь не аутентифицирован;
@@ -131,7 +132,7 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ReadUserBalanceHandler(rw http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
-	l.Info("CreateOrderHandler")
+	l.Info("ReadUserBalanceHandler")
 	username := con.Get(r, "username")
 
 	//401 — пользователь не аутентифицирован;
@@ -166,9 +167,55 @@ func (h *Handler) ReadUserBalanceHandler(rw http.ResponseWriter, r *http.Request
 	rw.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) CreateWithdrawHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
+func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+	l.Info("CreateOrderHandler")
+	username := con.Get(r, "username")
+
+	//401 — пользователь не аутентифицирован;
+	if username == nil {
+		l.Error("ERROR User is Unauthorized")
+		rw.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	var req models.RequestWithdraw
+	dec := json.NewDecoder(r.Body)
+
+	//400 — неверный формат запроса;
+	if err := dec.Decode(&req); err != nil {
+		l.Error("ERROR Can't decode request JSON body.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	//422 — неверный формат номера заказа;
+	if !utils.LuhnValid(req.Number) {
+		l.Error("ERROR invalid order number format.")
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	getStorage := storage.GetStorage()
+	err := getStorage.PutWithdraw(h.ctx, username, req.Number, req.Accrual)
+
+	//500 — внутренняя ошибка сервера.
+	if err != nil {
+		l.Error("ERROR DB.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	//402 — на счету недостаточно средств;
+	if errors.Is(err, pgx.ErrNoRows) {
+		l.Error("ERROR there are not enough funds in the account.")
+		rw.WriteHeader(http.StatusConflict)
+		return
+	}
+
+	//200 — успешная обработка запроса;
+	rw.WriteHeader(http.StatusOK)
+
 }
 
 func (h *Handler) ReadWithdrawsTestHandler(w http.ResponseWriter, r *http.Request) {

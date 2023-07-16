@@ -43,7 +43,7 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	var UploadedAt pgtype.Timestamptz
 	var ProcessedAt pgtype.Timestamptz
 
-	err = conn.QueryRow(ctx, "INSERT INTO public.gophermart_order (username, number, status) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING gophermart_order.id, gophermart_order.username, gophermart_order.number, gophermart_order.status, gophermart_order.accrual, gophermart_order.uploaded_at, gophermart_order.processed_at;", userName, number, models.StatusNew).Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+	err = conn.QueryRow(ctx, "INSERT INTO public.gophermart_order (username, number, status) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING *;", userName, number, models.StatusNew).Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
 	if err != nil {
 		return models.Order{}, err
 	}
@@ -156,4 +156,59 @@ func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (model
 	balance.ProcessedAt = ProcessedAt
 
 	return balance, nil
+}
+
+func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, number int64, accrual int) error {
+
+	l := logger.LoggerFromContext(ctx)
+	l.Info("PutOrder")
+	cfg := config.GetConfig()
+
+	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	if err != nil {
+		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
+		return err
+	}
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("failed to conn.Close(ctx)", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
+
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		l.Error("failed to Begin Tx in PutWithdraw", zap.String("msg", err.Error()))
+		return err
+	}
+
+	defer func(tx pgx.Tx) {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+	}(tx)
+
+	var ID int64
+	var UserName string
+	var Current int
+	var Withdrawn int
+	var UploadedAt pgtype.Timestamptz
+	var ProcessedAt pgtype.Timestamptz
+
+	err = tx.QueryRow(ctx, "update gophermart_balance set current=current-$2, withdrawn=withdrawn+$2 where current>$2 and username=$1 returning *;", userName, accrual).Scan(&ID, &UserName, &Current, &Withdrawn, &UploadedAt, &ProcessedAt)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, "INSERT INTO public.gophermart_order (username, number, status, accrual) VALUES ($1, $2, $3, $4);", userName, number, models.StatusNew, -accrual)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
