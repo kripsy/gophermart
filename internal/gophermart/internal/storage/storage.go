@@ -200,7 +200,7 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(ctx, "INSERT INTO public.gophermart_order (username, number, status, accrual) VALUES ($1, $2, $3, $4);", userName, number, models.StatusNew, -accrual)
+	_, err = tx.Exec(ctx, "INSERT INTO public.gophermart_order (username, number, status, accrual) VALUES ($1, $2, $3, $4);", userName, number, models.StatusProcessed, -accrual)
 	if err != nil {
 		return err
 	}
@@ -211,4 +211,59 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 	}
 
 	return err
+}
+
+func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseOrder, error) {
+
+	l := logger.LoggerFromContext(ctx)
+	l.Info("PutOrder")
+	cfg := config.GetConfig()
+
+	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	if err != nil {
+		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
+		return []models.ResponseOrder{}, err
+	}
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
+
+	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual < 0 order by uploaded_at;", userName)
+	if err != nil {
+		return []models.ResponseOrder{}, err
+	}
+	defer rows.Close()
+
+	var orders []models.ResponseOrder
+
+	for rows.Next() {
+		var ID int64
+		var UserName string
+		var Number int64
+		var Status string
+		var Accrual int
+		var UploadedAt pgtype.Timestamptz
+		var ProcessedAt pgtype.Timestamptz
+		err = rows.Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		order := models.ResponseOrder{}
+
+		order.ID = ID
+		order.UserName = UserName
+		order.Number = strconv.FormatInt(Number, 10)
+		order.Status = Status
+		order.Accrual = -Accrual
+		order.UploadedAt = UploadedAt
+		order.ProcessedAt = ProcessedAt
+
+		orders = append(orders, order)
+	}
+
+	return orders, nil
 }
