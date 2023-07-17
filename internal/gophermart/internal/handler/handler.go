@@ -10,6 +10,7 @@ import (
 
 	con "github.com/gorilla/context"
 	"github.com/jackc/pgx/v5"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/etl"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/models"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/storage"
@@ -89,7 +90,16 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 	//202 — новый номер заказа принят в обработку;
 	rw.WriteHeader(http.StatusAccepted)
 
-	// TODO Здесь я буду передавать в канал объект ордер в горутину которая будет ходить в сервис начислений.
+	ch := etl.GetChan()
+	responseOrder := models.ResponseOrder{}
+	responseOrder.ID = order.ID
+	responseOrder.UserName = order.UserName
+	responseOrder.Number = strconv.FormatInt(order.Number, 10)
+	responseOrder.Status = order.Status
+	responseOrder.Accrual = order.Accrual
+	responseOrder.UploadedAt = order.UploadedAt
+	responseOrder.ProcessedAt = order.ProcessedAt
+	ch <- responseOrder
 }
 
 func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {

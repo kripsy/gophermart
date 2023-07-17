@@ -36,6 +36,12 @@ type RequestWithdraw struct {
 	Accrual int    `json:"sum"`
 }
 
+type ResponseAccrual struct {
+	Order   string `json:"order"`
+	Status  string `json:"status"`
+	Accrual int    `json:"accrual"`
+}
+
 const (
 	StatusNew        = "NEW"        // Заказ загружен в систему, но не попал в обработку;
 	StatusProcessing = "PROCESSING" // Вознаграждение за заказ рассчитывается;

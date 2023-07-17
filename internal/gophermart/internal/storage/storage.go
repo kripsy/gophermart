@@ -116,6 +116,116 @@ func (s *DBStorage) GetOrders(ctx context.Context, userName interface{}) ([]mode
 	return orders, nil
 }
 
+func (s *DBStorage) GetProcessingOrders(ctx context.Context) ([]models.ResponseOrder, error) {
+
+	l := logger.LoggerFromContext(ctx)
+	l.Info("PutOrder")
+	cfg := config.GetConfig()
+
+	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	if err != nil {
+		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
+		return []models.ResponseOrder{}, err
+	}
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
+
+	rows, err := conn.Query(ctx, "select * from public.gophermart_order where status=$1 and accrual >= 0 order by uploaded_at;", models.StatusProcessing)
+	if err != nil {
+		return []models.ResponseOrder{}, err
+	}
+	defer rows.Close()
+
+	var orders []models.ResponseOrder
+
+	for rows.Next() {
+		var ID int64
+		var UserName string
+		var Number int64
+		var Status string
+		var Accrual int
+		var UploadedAt pgtype.Timestamptz
+		var ProcessedAt pgtype.Timestamptz
+		err = rows.Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		order := models.ResponseOrder{}
+
+		order.ID = ID
+		order.UserName = UserName
+		order.Number = strconv.FormatInt(Number, 10)
+		order.Status = Status
+		order.Accrual = Accrual
+		order.UploadedAt = UploadedAt
+		order.ProcessedAt = ProcessedAt
+
+		orders = append(orders, order)
+	}
+
+	return orders, nil
+}
+
+func (s *DBStorage) GetNewOrders(ctx context.Context) ([]models.ResponseOrder, error) {
+
+	l := logger.LoggerFromContext(ctx)
+	l.Info("PutOrder")
+	cfg := config.GetConfig()
+
+	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	if err != nil {
+		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
+		return []models.ResponseOrder{}, err
+	}
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
+
+	rows, err := conn.Query(ctx, "select * from public.gophermart_order where status=$1 and accrual >= 0 order by uploaded_at;", models.StatusNew)
+	if err != nil {
+		return []models.ResponseOrder{}, err
+	}
+	defer rows.Close()
+
+	var orders []models.ResponseOrder
+
+	for rows.Next() {
+		var ID int64
+		var UserName string
+		var Number int64
+		var Status string
+		var Accrual int
+		var UploadedAt pgtype.Timestamptz
+		var ProcessedAt pgtype.Timestamptz
+		err = rows.Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		order := models.ResponseOrder{}
+
+		order.ID = ID
+		order.UserName = UserName
+		order.Number = strconv.FormatInt(Number, 10)
+		order.Status = Status
+		order.Accrual = Accrual
+		order.UploadedAt = UploadedAt
+		order.ProcessedAt = ProcessedAt
+
+		orders = append(orders, order)
+	}
+
+	return orders, nil
+}
+
 func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (models.ResponseBalance, error) {
 
 	l := logger.LoggerFromContext(ctx)
@@ -266,4 +376,43 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 	}
 
 	return orders, nil
+}
+
+func (s *DBStorage) UpdateStatusOrder(ctx context.Context, number string, status string, accrual int) (models.ResponseOrder, error) {
+
+	l := logger.LoggerFromContext(ctx)
+	l.Info("PutOrder")
+	cfg := config.GetConfig()
+
+	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	if err != nil {
+		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
+		return models.ResponseOrder{}, err
+	}
+	defer conn.Close(ctx)
+
+	var ID int64
+	var UserName string
+	var Number string
+	var Status string
+	var Accrual int
+	var UploadedAt pgtype.Timestamptz
+	var ProcessedAt pgtype.Timestamptz
+
+	err = conn.QueryRow(ctx, "update public.gophermart_order set status=$1, accrual=$2 where number=$3 returning *;", status, accrual, number).Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+	if err != nil {
+		return models.ResponseOrder{}, err
+	}
+
+	order := models.ResponseOrder{}
+
+	order.ID = ID
+	order.UserName = UserName
+	order.Number = Number
+	order.Status = Status
+	order.Accrual = Accrual
+	order.UploadedAt = UploadedAt
+	order.ProcessedAt = ProcessedAt
+
+	return order, nil
 }

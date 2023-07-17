@@ -4,14 +4,16 @@ import (
 	"context"
 
 	"github.com/kripsy/gophermart/internal/gophermart/internal/config"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/etl"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/server"
 	"go.uber.org/zap"
 )
 
 type Application struct {
-	appConfig  *config.Config
-	appServer  *server.Server
+	appConfig *config.Config
+	appServer *server.Server
+	//appETL  *etl.E
 	appContext context.Context
 }
 
@@ -40,6 +42,8 @@ func NewApp(ctx context.Context) (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	etl.InitETL(ctx, cfg.AccrualAddress)
 
 	return &Application{
 		appConfig:  cfg,
