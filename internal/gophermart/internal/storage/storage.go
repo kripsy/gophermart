@@ -231,22 +231,26 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
-	if err != nil {
-		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
-		return []models.ResponseOrder{}, err
-	}
 	defer func(conn *pgx.Conn, ctx context.Context) {
 		err := conn.Close(ctx)
 		if err != nil {
 			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
 		}
 	}(conn, ctx)
+	if err != nil {
+		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
+		return []models.ResponseOrder{}, err
+	}
 
 	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual < 0 order by uploaded_at;", userName)
+	defer rows.Close()
+	if errors.Is(err, pgx.ErrNoRows) {
+		return []models.ResponseOrder{}, models.ErrNoOrder()
+	}
+
 	if err != nil {
 		return []models.ResponseOrder{}, err
 	}
-	defer rows.Close()
 
 	var orders []models.ResponseOrder
 

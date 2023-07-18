@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	con "github.com/gorilla/context"
-	"github.com/jackc/pgx/v5"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/models"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/storage"
@@ -211,8 +210,9 @@ func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request)
 	err = getStorage.PutWithdraw(h.ctx, username, number, req.Accrual)
 
 	//402 — на счету недостаточно средств;
-	if errors.Is(err, pgx.ErrNoRows) {
-		l.Error("ERROR there are not enough funds in the account.")
+	var e *models.ResponseBalanceError
+	if errors.As(err, &e) {
+		l.Error("ERROR there are not enough funds in the account.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusPaymentRequired)
 		return
 	}
@@ -245,7 +245,8 @@ func (h *Handler) ReadWithdrawsHandler(rw http.ResponseWriter, r *http.Request) 
 	withdraws, err := getStorage.GetWithdraws(h.ctx, username)
 
 	//204 — нет ни одного списания.
-	if errors.Is(err, pgx.ErrNoRows) {
+	var e *models.ResponseBalanceError
+	if errors.As(err, &e) {
 		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusNoContent)
 	}
