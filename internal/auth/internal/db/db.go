@@ -193,7 +193,12 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 	l.Debug("success build sql", zap.String("msg", qbsql))
 
 	stmt, err := tx.PrepareContext(ctx, qbsql)
-	defer stmt.Close()
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			l.Error("Unable PrepareContext: ", zap.String("msg", err.Error()))
+		}
+	}(stmt)
 	if err != nil {
 		l.Error("failed to PrepareContext stmt in getNextUserID", zap.String("msg", err.Error()))
 		return 0, err
