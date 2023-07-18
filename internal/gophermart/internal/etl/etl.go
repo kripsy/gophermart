@@ -54,7 +54,7 @@ func restore(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models
 
 func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models.ResponseOrder, accrualAddress string) {
 	l := logger.LoggerFromContext(ctx)
-	l.Info("restore")
+	l.Info("registeringNewOrder")
 	getStorage := storage.GetStorage()
 	for {
 		order := <-ch1
@@ -81,6 +81,8 @@ func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2
 }
 
 func getAndStoreAccrualForOrder(ctx context.Context, ch2 chan models.ResponseOrder, accrualAddress string) {
+	l := logger.LoggerFromContext(ctx)
+	l.Info("getAndStoreAccrualForOrder")
 	getStorage := storage.GetStorage()
 	for {
 		order := <-ch2
@@ -91,10 +93,16 @@ func getAndStoreAccrualForOrder(ctx context.Context, ch2 chan models.ResponseOrd
 
 		resp, err := http.Get(u.String())
 		if err != nil {
-			log.Fatalln(err)
+			l.Error("ERROR Can't get accrual.", zap.String("msg", err.Error()))
 		}
 
 		body, err := io.ReadAll(resp.Body)
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+				l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
+			}
+		}(resp.Body)
 
 		accrual := &models.ResponseAccrual{}
 		err = json.Unmarshal(body, accrual)
