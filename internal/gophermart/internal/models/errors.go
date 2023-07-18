@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 )
 
 type ResponseBalanceError struct {
@@ -14,7 +13,7 @@ func (e *ResponseBalanceError) Error() string { return e.Text + ": " + e.Err.Err
 
 func ErrNoBalance() error {
 	return &ResponseBalanceError{
-		Text: fmt.Sprintf("the user has no balance"),
+		Text: "the user has no balance",
 		Err:  errors.New("no balance"),
 	}
 }
