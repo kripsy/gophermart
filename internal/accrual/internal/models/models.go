@@ -1,15 +1,19 @@
 package models
 
-import "github.com/jackc/pgx/v5/pgtype"
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/shopspring/decimal"
+)
 
 type RequestOrder struct {
 	Number string         `json:"order"`
 	Goods  []RequestGoods `json:"goods"`
+	//Goods int `json:"goods"`
 }
 
 type RequestGoods struct {
-	Description string `json:"description"`
-	Price       int    `json:"price"`
+	Description string          `json:"description"`
+	Price       decimal.Decimal `json:"price"`
 }
 
 type Order struct {
