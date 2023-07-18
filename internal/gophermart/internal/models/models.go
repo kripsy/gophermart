@@ -33,8 +33,10 @@ type ResponseBalance struct {
 	ProcessedAt pgtype.Timestamptz `json:"-"`
 }
 
-// ErrOrderIsNotRegistered occurs when user has no balance.
-//var ErrUserOrdersNotRegistered = errors.New("the user orders are not registered in the payment system.")
+type RequestWithdraw struct {
+	Number  int64 `json:"order"`
+	Accrual int   `json:"sum"`
+}
 
 // TODO можно было бы еще что-то типо такого сделать
 //type OrderStatus string

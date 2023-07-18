@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5"
 	"github.com/kripsy/gophermart/internal/accrual/internal/logger"
 	"github.com/kripsy/gophermart/internal/accrual/internal/models"
 	"github.com/kripsy/gophermart/internal/accrual/internal/storage"
@@ -113,10 +112,11 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	order, err := getStorage.GetOrder(h.ctx, number)
 
 	// 204 — заказ не зарегистрирован в системе расчёта.
-	// TODO я бы ошибки уровня БД ловил и прокидывал бы "свои" ошибки из models. На уровне  usecase/handler это намного удобнее.
-	if errors.Is(err, pgx.ErrNoRows) {
+	var e *models.AccrualError
+	if errors.As(err, &e) {
 		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusNoContent)
+		return
 	}
 
 	//500 — внутренняя ошибка сервера.
