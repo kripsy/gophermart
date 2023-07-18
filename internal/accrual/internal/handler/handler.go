@@ -134,7 +134,7 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 
 	enc := json.NewEncoder(rw)
 	if err := enc.Encode(resp); err != nil {
-		l.Error("wraperror encoding response", zap.String("msg", err.Error()))
+		l.Error("error encoding response", zap.String("msg", err.Error()))
 		return
 	}
 }
