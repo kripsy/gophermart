@@ -104,6 +104,10 @@ func getAndStoreAccrualForOrder(ctx context.Context, ch2 chan models.ResponseOrd
 			}
 		}(resp.Body)
 
+		if err != nil {
+			l.Error("ERROR Can't get body from request.", zap.String("msg", err.Error()))
+		}
+
 		accrual := &models.ResponseAccrual{}
 		err = json.Unmarshal(body, accrual)
 		if err != nil {
