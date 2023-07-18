@@ -29,7 +29,6 @@ func main() {
 	logger.Info("LOGGER_LEVEL", zap.String("msg", loggerLevel))
 	logger.Info("RUN_ADDRESS", zap.String("msg", runAddress))
 	logger.Info("DATABASE_URI", zap.String("msg", dbURI))
-
 	err = http.ListenAndServe(runAddress, application.GetAppServer().Router)
 	if err != nil {
 		logger.Error("Error ListenAndServe", zap.String("msg", err.Error()))
