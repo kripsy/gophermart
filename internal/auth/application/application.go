@@ -40,13 +40,13 @@ func NewApp(ctx context.Context) (*Application, error) {
 
 	db, err := db.InitDB(ctx, cfg.DatabaseAddress, cfg.MigrationsPath)
 	if err != nil {
-		l.Error("error init DB", zap.String("msg", err.Error()))
+		l.Error("wraperror init DB", zap.String("msg", err.Error()))
 		return nil, err
 	}
 
 	uc, err := usecase.InitUseCases(ctx, db, cfg)
 	if err != nil {
-		l.Error("error init usecase", zap.String("msg", err.Error()))
+		l.Error("wraperror init usecase", zap.String("msg", err.Error()))
 		return nil, err
 	}
 

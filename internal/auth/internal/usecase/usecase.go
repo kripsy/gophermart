@@ -32,8 +32,8 @@ func InitUseCases(ctx context.Context, db *db.DB, cfg *config.Config) (*UseCase,
 	return uc, nil
 }
 
-// RegisterUser get context, username, password and return token, expired time, error.
-// At the first step we check is user exists. If exists - return error conflict.
+// RegisterUser get context, username, password and return token, expired time, wraperror.
+// At the first step we check is user exists. If exists - return wraperror conflict.
 // If user not exists we get new user ID.
 // After register new user we generate new jwt token.
 func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) (string, time.Time, error) {
@@ -42,7 +42,7 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 	defer cancel()
 	isUserExists, err := uc.db.IsUserExists(ctx, username)
 	if err != nil {
-		l.Error("error check isUserExists in RegisterUser", zap.String("msg", err.Error()))
+		l.Error("wraperror check isUserExists in RegisterUser", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
 
@@ -58,7 +58,7 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 
 	newID, err := uc.db.GetNextUserID(ctx)
 	if err != nil {
-		l.Error("error get newID in RegisterUser", zap.String("msg", err.Error()))
+		l.Error("wraperror get newID in RegisterUser", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
 	l.Debug("new ID", zap.Int("msg", newID))
@@ -68,7 +68,7 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 
 	hash, err := utils.GetHash(ctx, password)
 	if err != nil {
-		l.Error("error GetHash in RegisterUser", zap.String("msg", err.Error()))
+		l.Error("wraperror GetHash in RegisterUser", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
 
@@ -79,7 +79,7 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 			l.Debug("register dublicate user", zap.String("msg", username))
 			return "", time.Time{}, err
 		} else {
-			l.Error("error usecase RegisterUser", zap.String("msg", err.Error()))
+			l.Error("wraperror usecase RegisterUser", zap.String("msg", err.Error()))
 			return "", time.Time{}, err
 		}
 	}
@@ -91,7 +91,7 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 	tokenString, expAt, err := utils.BuildJWTString(ctx, newID, username, uc.cfg.SecretKey, uc.cfg.TokenExp)
 
 	if err != nil {
-		l.Error("error BuildJWTString", zap.String("msg", err.Error()))
+		l.Error("wraperror BuildJWTString", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
 	return tokenString, expAt, nil
@@ -106,7 +106,7 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 
 	userID, hashPassword, err := uc.db.GetUserHashPassword(ctx, username)
 	if err != nil {
-		l.Error("error GetUserHashPassword in LoginUser", zap.String("msg", err.Error()))
+		l.Error("wraperror GetUserHashPassword in LoginUser", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
 
@@ -118,7 +118,7 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 
 	tokenString, expAt, err := utils.BuildJWTString(ctx, userID, username, uc.cfg.SecretKey, uc.cfg.TokenExp)
 	if err != nil {
-		l.Error("error BuildJWTString", zap.String("msg", err.Error()))
+		l.Error("wraperror BuildJWTString", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
 	l.Debug("success login user", zap.String("msg", username))

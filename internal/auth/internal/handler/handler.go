@@ -56,20 +56,20 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	l.Debug("RegisterUserHandler")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		l.Error("error read from body", zap.String("msg", err.Error()))
+		l.Error("wraperror read from body", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 	err = r.Body.Close()
 	if err != nil {
-		l.Debug("error close body", zap.String("msg", err.Error()))
+		l.Debug("wraperror close body", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
 	user, err := models.InitNewUser(body)
 	if err != nil {
-		l.Debug("error init model of user from request", zap.String("msg", err.Error()))
+		l.Debug("wraperror init model of user from request", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
@@ -83,7 +83,7 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		if errors.As(err, &ue) {
 			isUniqueError = true
 		} else {
-			l.Error("error register user", zap.String("msg", err.Error()))
+			l.Error("wraperror register user", zap.String("msg", err.Error()))
 			http.Error(w, "", http.StatusInternalServerError)
 			return
 		}
@@ -95,7 +95,7 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err := utils.AddToken(w, token, expTime)
 		if err != nil {
-			// TODO add error handling
+			// TODO add wraperror handling
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -110,20 +110,20 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	l.Debug("LoginUserHandler")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		l.Error("error read from body", zap.String("msg", err.Error()))
+		l.Error("wraperror read from body", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 	err = r.Body.Close()
 	if err != nil {
-		l.Debug("error close body", zap.String("msg", err.Error()))
+		l.Debug("wraperror close body", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
 
 	user, err := models.InitNewUser(body)
 	if err != nil {
-		l.Debug("error init model of user from request", zap.String("msg", err.Error()))
+		l.Debug("wraperror init model of user from request", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
@@ -135,11 +135,11 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var userLoginError *models.UserLoginError
 		if errors.As(err, &userLoginError) {
-			l.Error("error login user", zap.String("msg", err.Error()))
+			l.Error("wraperror login user", zap.String("msg", err.Error()))
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
-		l.Error("error login user", zap.String("msg", err.Error()))
+		l.Error("wraperror login user", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 
@@ -148,7 +148,7 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	err = utils.AddToken(w, token, expTime)
 	if err != nil {
-		// TODO add error handling
+		// TODO add wraperror handling
 		return
 	}
 	w.WriteHeader(http.StatusOK)

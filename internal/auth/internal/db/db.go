@@ -29,7 +29,7 @@ func InitDB(ctx context.Context, dsn, migrationsPath string) (*DB, error) {
 	err := RunMigrations(ctx, dsn, migrationsPath)
 
 	if err != nil {
-		l.Error("error Run migrations", zap.String("msg", err.Error()))
+		l.Error("wraperror Run migrations", zap.String("msg", err.Error()))
 		return nil, err
 	}
 
@@ -37,7 +37,7 @@ func InitDB(ctx context.Context, dsn, migrationsPath string) (*DB, error) {
 	db, err := sqlx.ConnectContext(ctx, "postgres", dsn)
 
 	if err != nil {
-		l.Error("error InitDB", zap.String("msg", err.Error()))
+		l.Error("wraperror InitDB", zap.String("msg", err.Error()))
 		return nil, err
 	}
 	l.Debug("success InitDB")
@@ -260,7 +260,7 @@ func (db *DB) GetUserHashPassword(ctx context.Context, username string) (int, st
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			l.Debug("error compare username and pwd", zap.String("msg", username))
+			l.Debug("wraperror compare username and pwd", zap.String("msg", username))
 			return 0, "", models.NewUserLoginError(username)
 		}
 		l.Error("failed scan userExists", zap.String("msg", err.Error()))
