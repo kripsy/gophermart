@@ -30,7 +30,12 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
-	defer conn.Close(ctx)
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("Unable to Close connect to database: %v\n", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
 	if err != nil {
 		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
 		return models.Order{}, err
@@ -81,7 +86,7 @@ func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]mode
 	}
 
 	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", username)
-	//lint:ignore SA5001 ignore this!
+	//lint:ignore SA5001 func (rows *baseRows) Close() {} does not return an error !
 	defer rows.Close()
 
 	if err != nil {

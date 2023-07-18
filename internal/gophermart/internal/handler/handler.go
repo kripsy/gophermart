@@ -236,7 +236,6 @@ func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request)
 
 	//200 — успешная обработка запроса;
 	rw.WriteHeader(http.StatusOK)
-	return
 }
 
 func (h *Handler) ReadWithdrawsHandler(rw http.ResponseWriter, r *http.Request) {
