@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/jackc/pgx/v5"
@@ -36,14 +37,14 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	defer conn.Close(ctx)
 
 	var ID int64
-	var UserName string
+	var Username string
 	var Number int64
 	var Status string
 	var Accrual int
 	var UploadedAt pgtype.Timestamptz
 	var ProcessedAt pgtype.Timestamptz
 
-	err = conn.QueryRow(ctx, "INSERT INTO public.gophermart_order (username, number, status) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING *;", userName, number, models.StatusNew).Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+	err = conn.QueryRow(ctx, "INSERT INTO public.gophermart_order (username, number, status) VALUES ($1, $2, $3) ON CONFLICT (number) DO UPDATE SET number=EXCLUDED.number RETURNING *;", userName, number, models.StatusNew).Scan(&ID, &Username, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
 	if err != nil {
 		return models.Order{}, err
 	}
@@ -51,7 +52,7 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	order := models.Order{}
 
 	order.ID = ID
-	order.UserName = UserName
+	order.Username = Username
 	order.Number = Number
 	order.Status = Status
 	order.Accrual = Accrual
@@ -61,7 +62,7 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	return order, nil
 }
 
-func (s *DBStorage) GetOrders(ctx context.Context, userName interface{}) ([]models.ResponseOrder, error) {
+func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]models.ResponseOrder, error) {
 
 	l := logger.LoggerFromContext(ctx)
 	l.Info("PutOrder")
@@ -79,23 +80,25 @@ func (s *DBStorage) GetOrders(ctx context.Context, userName interface{}) ([]mode
 		}
 	}(conn, ctx)
 
-	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", userName)
+	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", username)
+	//lint:ignore SA5001 ignore this!
+	defer rows.Close()
+
 	if err != nil {
 		return []models.ResponseOrder{}, err
 	}
-	defer rows.Close()
 
-	var orders []models.ResponseOrder
+	orders := make([]models.ResponseOrder, 0)
 
 	for rows.Next() {
 		var ID int64
-		var UserName string
+		var Username string
 		var Number int64
 		var Status string
 		var Accrual int
 		var UploadedAt pgtype.Timestamptz
 		var ProcessedAt pgtype.Timestamptz
-		err = rows.Scan(&ID, &UserName, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+		err = rows.Scan(&ID, &Username, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -103,7 +106,7 @@ func (s *DBStorage) GetOrders(ctx context.Context, userName interface{}) ([]mode
 		order := models.ResponseOrder{}
 
 		order.ID = ID
-		order.UserName = UserName
+		order.Username = Username
 		order.Number = strconv.FormatInt(Number, 10)
 		order.Status = Status
 		order.Accrual = Accrual
@@ -135,13 +138,17 @@ func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (model
 	}(conn, ctx)
 
 	var ID int64
-	var UserName string
+	var Username string
 	var Current int
 	var Withdrawn int
 	var UploadedAt pgtype.Timestamptz
 	var ProcessedAt pgtype.Timestamptz
 
-	err = conn.QueryRow(ctx, "select * from public.gophermart_balance where username=$1;", userName).Scan(&ID, &UserName, &Current, &Withdrawn, &UploadedAt, &ProcessedAt)
+	err = conn.QueryRow(ctx, "select * from public.gophermart_balance where username=$1;", userName).Scan(&ID, &Username, &Current, &Withdrawn, &UploadedAt, &ProcessedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return models.ResponseBalance{}, models.ErrNoBalance()
+	}
+
 	if err != nil {
 		return models.ResponseBalance{}, err
 	}
@@ -149,7 +156,7 @@ func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (model
 	balance := models.ResponseBalance{}
 
 	balance.ID = ID
-	balance.UserName = UserName
+	balance.Username = Username
 	balance.Current = Current
 	balance.Withdrawn = Withdrawn
 	balance.UploadedAt = UploadedAt
