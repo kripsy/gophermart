@@ -87,7 +87,7 @@ func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]mode
 
 	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", username)
 	//lint:ignore SA5001 func (rows *baseRows) Close() {} does not return an error !
-	defer rows.Close() //nolint:all
+	//defer rows.Close() //nolint:all
 
 	if err != nil {
 		return []models.ResponseOrder{}, err
@@ -120,6 +120,8 @@ func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]mode
 
 		orders = append(orders, order)
 	}
+
+	rows.Close()
 
 	return orders, nil
 }
@@ -359,7 +361,7 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 
 	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual < 0 order by uploaded_at;", userName)
 	//lint:ignore SA5001 func (rows *baseRows) Close() {} does not return an error !
-	defer rows.Close() //nolint:all
+	//defer rows.Close() //nolint:all
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return []models.ResponseOrder{}, models.ErrNoOrder()
@@ -396,6 +398,8 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 
 		orders = append(orders, order)
 	}
+
+	rows.Close()
 
 	return orders, nil
 }
