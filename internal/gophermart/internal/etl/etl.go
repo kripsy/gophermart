@@ -67,6 +67,12 @@ func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2
 		jsonBody := []byte(body)
 		r := bytes.NewReader(jsonBody)
 		resp, err := http.Post(u.String(), "application/json", r)
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+				l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
+			}
+		}(resp.Body)
 		if err != nil {
 			l.Error("ERROR Can't get accrual.", zap.String("msg", err.Error()))
 		}
