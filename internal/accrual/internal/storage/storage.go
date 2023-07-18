@@ -29,7 +29,12 @@ func (s *DBStorage) PutOrder(ctx context.Context, number int64) (models.Order, e
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
-	defer conn.Close(ctx)
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
 	if err != nil {
 		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
 		return models.Order{}, err
@@ -66,7 +71,12 @@ func (s *DBStorage) GetOrder(ctx context.Context, number int64) (models.Order, e
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
-	defer conn.Close(ctx)
+	defer func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
+		}
+	}(conn, ctx)
 	if err != nil {
 		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
 		return models.Order{}, err
