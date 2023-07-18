@@ -88,7 +88,7 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 
 	l.Debug("generate new token", zap.String("msg", username))
 
-	tokenString, expAt, err := utils.BuildJWTString(ctx, newID, username, uc.cfg.SecretKey, uc.cfg.TokenExp)
+	tokenString, expAt, err := utils.BuildJWTString(ctx, newID, username, uc.cfg.PrivateKey, uc.cfg.TokenExp)
 
 	if err != nil {
 		l.Error("error BuildJWTString", zap.String("msg", err.Error()))
@@ -116,7 +116,7 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 		return "", time.Time{}, models.NewUserLoginError(username)
 	}
 
-	tokenString, expAt, err := utils.BuildJWTString(ctx, userID, username, uc.cfg.SecretKey, uc.cfg.TokenExp)
+	tokenString, expAt, err := utils.BuildJWTString(ctx, userID, username, uc.cfg.PrivateKey, uc.cfg.TokenExp)
 	if err != nil {
 		l.Error("error BuildJWTString", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
