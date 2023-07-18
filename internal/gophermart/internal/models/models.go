@@ -1,10 +1,12 @@
 package models
 
-import "github.com/jackc/pgx/v5/pgtype"
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
 
 type Order struct {
 	ID          int64
-	UserName    string
+	Username    string
 	Number      int64
 	Status      string
 	Accrual     int
@@ -14,13 +16,25 @@ type Order struct {
 
 type ResponseOrder struct {
 	ID          int64              `json:"-"`
-	UserName    string             `json:"-"`
+	Username    string             `json:"-"`
 	Number      string             `json:"order"`
 	Status      string             `json:"status"`
 	Accrual     int                `json:"accrual,omitempty"`
 	UploadedAt  pgtype.Timestamptz `json:"uploaded_at"`
 	ProcessedAt pgtype.Timestamptz `json:"-"`
 }
+
+type ResponseBalance struct {
+	ID          int64              `json:"-"`
+	Username    string             `json:"-"`
+	Current     int                `json:"current"`
+	Withdrawn   int                `json:"withdrawn"`
+	UploadedAt  pgtype.Timestamptz `json:"uploaded_at"`
+	ProcessedAt pgtype.Timestamptz `json:"-"`
+}
+
+// ErrOrderIsNotRegistered occurs when user has no balance.
+//var ErrUserOrdersNotRegistered = errors.New("the user orders are not registered in the payment system.")
 
 // TODO можно было бы еще что-то типо такого сделать
 //type OrderStatus string

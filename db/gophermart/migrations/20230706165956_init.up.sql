@@ -31,7 +31,7 @@ create index gophermart_order_status_index_hash on public.gophermart_order using
 create table if not exists public.gophermart_balance
 (
     id           bigserial primary key    not null,
-    username     varchar(255)             not null,
+    username     varchar(255)             not null unique,
     current      int,
     withdrawn    int,
     uploaded_at  timestamp with time zone not null default now(),
