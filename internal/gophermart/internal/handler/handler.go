@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"strconv"
@@ -88,9 +89,43 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 	// TODO Здесь я буду передавать в канал объект ордер в горутину которая будет ходить в сервис начислений.
 }
 
-func (h *Handler) ReadOrdersHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
+func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
+	l := logger.LoggerFromContext(h.ctx)
+	l.Info("CreateOrderHandler")
+	username := con.Get(r, "username")
+	rw.Header().Set("Content-Type", "application/json")
+
+	//401 — пользователь не аутентифицирован;
+	if username == nil {
+		l.Error("ERROR User is Unauthorized")
+		rw.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	getStorage := storage.GetStorage()
+	orders, err := getStorage.GetOrders(h.ctx, username)
+
+	//500 — внутренняя ошибка сервера.
+	if err != nil {
+		l.Error("ERROR DB.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// 204 — заказ не зарегистрирован в системе расчёта.
+	if len(orders) == 0 {
+		rw.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+
+	enc := json.NewEncoder(rw)
+	if err := enc.Encode(orders); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		l.Error("ERROR encoding response.", zap.String("msg", err.Error()))
+		return
+	}
 }
 
 func (h *Handler) ReadUserBalanceHandler(w http.ResponseWriter, r *http.Request) {
