@@ -133,6 +133,7 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	resp.Accrual = order.Accrual
 
 	enc := json.NewEncoder(rw)
+	rw.Header().Set("Content-Type", "application/json")
 	if err := enc.Encode(resp); err != nil {
 		l.Error("error encoding response", zap.String("msg", err.Error()))
 		return

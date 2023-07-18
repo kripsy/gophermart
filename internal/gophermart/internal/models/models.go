@@ -38,6 +38,12 @@ type RequestWithdraw struct {
 	Accrual int    `json:"sum"`
 }
 
+type ResponseAccrual struct {
+	Order   string `json:"order"`
+	Status  string `json:"status"`
+	Accrual int    `json:"accrual"`
+}
+
 // TODO можно было бы еще что-то типо такого сделать
 //type OrderStatus string
 //и потом
