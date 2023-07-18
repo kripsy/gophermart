@@ -3,13 +3,11 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 	"strconv"
 
 	con "github.com/gorilla/context"
-	"github.com/jackc/pgx/v5"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/storage"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/utils"
@@ -95,6 +93,7 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
 	l.Info("CreateOrderHandler")
 	username := con.Get(r, "username")
+	rw.Header().Set("Content-Type", "application/json")
 
 	//401 — пользователь не аутентифицирован;
 	if username == nil {
@@ -106,12 +105,6 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	getStorage := storage.GetStorage()
 	orders, err := getStorage.GetOrders(h.ctx, username)
 
-	// 204 — заказ не зарегистрирован в системе расчёта.
-	if errors.Is(err, pgx.ErrNoRows) {
-		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
-		rw.WriteHeader(http.StatusNoContent)
-	}
-
 	//500 — внутренняя ошибка сервера.
 	if err != nil {
 		l.Error("ERROR DB.", zap.String("msg", err.Error()))
@@ -119,14 +112,20 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	enc := json.NewEncoder(rw)
-	if err := enc.Encode(orders); err != nil {
-		l.Error("ERROR encoding response.", zap.String("msg", err.Error()))
+	// 204 — заказ не зарегистрирован в системе расчёта.
+	if len(orders) == 0 {
+		rw.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
+
+	enc := json.NewEncoder(rw)
+	if err := enc.Encode(orders); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		l.Error("ERROR encoding response.", zap.String("msg", err.Error()))
+		return
+	}
 }
 
 func (h *Handler) ReadUserBalanceHandler(w http.ResponseWriter, r *http.Request) {

@@ -61,7 +61,7 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	return order, nil
 }
 
-func (s *DBStorage) GetOrders(ctx context.Context, userName interface{}) ([]models.ResponseOrder, error) {
+func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]models.ResponseOrder, error) {
 
 	l := logger.LoggerFromContext(ctx)
 	l.Info("PutOrder")
@@ -79,13 +79,14 @@ func (s *DBStorage) GetOrders(ctx context.Context, userName interface{}) ([]mode
 		}
 	}(conn, ctx)
 
-	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", userName)
+	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", username)
+	defer rows.Close()
+
 	if err != nil {
 		return []models.ResponseOrder{}, err
 	}
-	defer rows.Close()
 
-	var orders []models.ResponseOrder
+	orders := make([]models.ResponseOrder, 0)
 
 	for rows.Next() {
 		var ID int64

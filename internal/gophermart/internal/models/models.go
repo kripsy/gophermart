@@ -22,6 +22,11 @@ type ResponseOrder struct {
 	ProcessedAt pgtype.Timestamptz `json:"-"`
 }
 
+// TODO можно было бы еще что-то типо такого сделать
+//type OrderStatus string
+//и потом
+//var ( REGISTERED OrderStatus = "REGISTERED" ... )
+
 const (
 	StatusNew        = "NEW"        // Заказ загружен в систему, но не попал в обработку;
 	StatusProcessing = "PROCESSING" // Вознаграждение за заказ рассчитывается;
