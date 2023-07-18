@@ -14,12 +14,14 @@ import (
 )
 
 type Handler struct {
-	ctx context.Context
+	ctx       context.Context
+	PublicKey string
 }
 
-func InitHandler(ctx context.Context) (*Handler, error) {
+func InitHandler(ctx context.Context, publicKey string) (*Handler, error) {
 	h := &Handler{
-		ctx: ctx,
+		ctx:       ctx,
+		PublicKey: publicKey,
 	}
 	return h, nil
 }

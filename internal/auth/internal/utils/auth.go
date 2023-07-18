@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -14,8 +15,14 @@ import (
 )
 
 func BuildJWTString(ctx context.Context, userID int, username, privateKey string, expTime time.Duration) (string, time.Time, error) {
-	privateKeyPEM, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKey))
 	l := logger.LoggerFromContext(ctx)
+
+	privateKeyPEM, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKey))
+	if err != nil {
+		l.Error("failed in BuildJWTString to ParseRSAPrivateKeyFromPEM", zap.String("msg", err.Error()))
+		return "", time.Time{}, err
+	}
+
 	expAt := time.Now().Add(expTime)
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, common.Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -30,6 +37,7 @@ func BuildJWTString(ctx context.Context, userID int, username, privateKey string
 		l.Error("failed in BuildJWTString", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
+	fmt.Println(tokenString)
 	return tokenString, expAt, nil
 }
 
