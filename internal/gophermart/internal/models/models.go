@@ -1,8 +1,6 @@
 package models
 
 import (
-	"errors"
-
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -36,7 +34,7 @@ type ResponseBalance struct {
 }
 
 // ErrOrderIsNotRegistered occurs when user has no balance.
-var ErrUserOrdersNotRegistered = errors.New("the user orders are not registered in the payment system.")
+//var ErrUserOrdersNotRegistered = errors.New("the user orders are not registered in the payment system.")
 
 // TODO можно было бы еще что-то типо такого сделать
 //type OrderStatus string

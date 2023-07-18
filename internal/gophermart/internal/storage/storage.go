@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/jackc/pgx/v5"
@@ -147,7 +146,7 @@ func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (model
 
 	err = conn.QueryRow(ctx, "select * from public.gophermart_balance where username=$1;", userName).Scan(&ID, &Username, &Current, &Withdrawn, &UploadedAt, &ProcessedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return models.ResponseBalance{}, fmt.Errorf("%s %w", models.ErrUserOrdersNotRegistered, err)
+		return models.ResponseBalance{}, models.ErrNoBalance()
 	}
 
 	if err != nil {

@@ -146,7 +146,8 @@ func (h *Handler) ReadUserBalanceHandler(rw http.ResponseWriter, r *http.Request
 	balance, err := getStorage.GetBalance(h.ctx, username)
 
 	// 204 — заказ не зарегистрирован в системе расчёта.
-	if errors.As(err, &models.ErrUserOrdersNotRegistered) {
+	var e *models.ResponseBalanceError
+	if errors.As(err, &e) {
 		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusNoContent)
 		return
