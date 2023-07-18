@@ -210,9 +210,10 @@ func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request)
 	}
 
 	//402 — на счету недостаточно средств;
-	if errors.Is(err, pgx.ErrNoRows) {
-		l.Error("ERROR there are not enough funds in the account.")
-		rw.WriteHeader(http.StatusConflict)
+	var e *models.ResponseBalanceError
+	if errors.As(err, &e) {
+		l.Error("ERROR there are not enough funds in the account.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusNoContent)
 		return
 	}
 

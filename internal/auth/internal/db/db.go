@@ -68,17 +68,16 @@ func (db *DB) RegisterUser(ctx context.Context, username, hashPassword string, i
 	l.Debug("usecase RegisterUser")
 
 	tx, err := db.DB.Begin()
-	if err != nil {
-		l.Error("failed to Begin Tx in RegisterUser", zap.String("msg", err.Error()))
-		return err
-	}
-
 	defer func(tx *sql.Tx) {
 		err := tx.Rollback()
 		if err != nil {
 			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
 		}
 	}(tx)
+	if err != nil {
+		l.Error("failed to Begin Tx in RegisterUser", zap.String("msg", err.Error()))
+		return err
+	}
 
 	queryBuilder := squirrel.
 		Insert("users").
@@ -116,17 +115,17 @@ func (db *DB) IsUserExists(ctx context.Context, username string) (bool, error) {
 	l.Debug("start IsUserExists")
 
 	tx, err := db.DB.Begin()
-	if err != nil {
-		l.Error("failed to Begin Tx in IsUserExists", zap.String("msg", err.Error()))
-		return false, err
-	}
-
 	defer func(tx *sql.Tx) {
 		err := tx.Rollback()
 		if err != nil {
 			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
 		}
 	}(tx)
+
+	if err != nil {
+		l.Error("failed to Begin Tx in IsUserExists", zap.String("msg", err.Error()))
+		return false, err
+	}
 
 	var userExists bool
 	queryBuilder := squirrel.Select("1").
@@ -168,17 +167,17 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 	l.Debug("start GetNextUserID")
 
 	tx, err := db.DB.Begin()
-	if err != nil {
-		l.Error("failed to Begin Tx in getNextUserID", zap.String("msg", err.Error()))
-		return 0, err
-	}
-
 	defer func(tx *sql.Tx) {
 		err := tx.Rollback()
 		if err != nil {
 			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
 		}
 	}(tx)
+
+	if err != nil {
+		l.Error("failed to Begin Tx in getNextUserID", zap.String("msg", err.Error()))
+		return 0, err
+	}
 
 	queryBuilder := squirrel.
 		Select("MAX(id)+1").
@@ -194,11 +193,11 @@ func (db *DB) GetNextUserID(ctx context.Context) (int, error) {
 	l.Debug("success build sql", zap.String("msg", qbsql))
 
 	stmt, err := tx.PrepareContext(ctx, qbsql)
+	defer stmt.Close()
 	if err != nil {
 		l.Error("failed to PrepareContext stmt in getNextUserID", zap.String("msg", err.Error()))
 		return 0, err
 	}
-	defer stmt.Close()
 
 	row := stmt.QueryRowContext(ctx)
 	var nextID sql.NullInt32
@@ -227,17 +226,17 @@ func (db *DB) GetUserHashPassword(ctx context.Context, username string) (int, st
 	l.Debug("start GetUserHashPassword")
 
 	tx, err := db.DB.Begin()
-	if err != nil {
-		l.Error("failed to Begin Tx in GetUserHashPassword", zap.String("msg", err.Error()))
-		return 0, "", err
-	}
-
 	defer func(tx *sql.Tx) {
 		err := tx.Rollback()
 		if err != nil {
 			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
 		}
 	}(tx)
+
+	if err != nil {
+		l.Error("failed to Begin Tx in GetUserHashPassword", zap.String("msg", err.Error()))
+		return 0, "", err
+	}
 
 	var userID int
 	var hashPassword string

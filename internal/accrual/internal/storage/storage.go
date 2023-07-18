@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -28,11 +29,11 @@ func (s *DBStorage) PutOrder(ctx context.Context, number int64) (models.Order, e
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	defer conn.Close(ctx)
 	if err != nil {
 		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
 		return models.Order{}, err
 	}
-	defer conn.Close(ctx)
 
 	var ID int64
 	var Number int64
@@ -65,11 +66,11 @@ func (s *DBStorage) GetOrder(ctx context.Context, number int64) (models.Order, e
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	defer conn.Close(ctx)
 	if err != nil {
 		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
 		return models.Order{}, err
 	}
-	defer conn.Close(ctx)
 
 	var ID int64
 	var Number int64
@@ -79,6 +80,10 @@ func (s *DBStorage) GetOrder(ctx context.Context, number int64) (models.Order, e
 	var ProcessedAt pgtype.Timestamptz
 
 	err = conn.QueryRow(ctx, "select * from public.accrual where number=$1;", number).Scan(&ID, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return models.Order{}, models.ErrNoAccrual()
+	}
+
 	if err != nil {
 		return models.Order{}, err
 	}

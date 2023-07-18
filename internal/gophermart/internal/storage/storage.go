@@ -30,11 +30,11 @@ func (s *DBStorage) PutOrder(ctx context.Context, userName interface{}, number i
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
+	defer conn.Close(ctx)
 	if err != nil {
 		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
 		return models.Order{}, err
 	}
-	defer conn.Close(ctx)
 
 	var ID int64
 	var Username string
@@ -69,16 +69,16 @@ func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]mode
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
-	if err != nil {
-		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
-		return []models.ResponseOrder{}, err
-	}
 	defer func(conn *pgx.Conn, ctx context.Context) {
 		err := conn.Close(ctx)
 		if err != nil {
 			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
 		}
 	}(conn, ctx)
+	if err != nil {
+		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
+		return []models.ResponseOrder{}, err
+	}
 
 	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", username)
 	//lint:ignore SA5001 ignore this!
@@ -126,16 +126,16 @@ func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (model
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
-	if err != nil {
-		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
-		return models.ResponseBalance{}, err
-	}
 	defer func(conn *pgx.Conn, ctx context.Context) {
 		err := conn.Close(ctx)
 		if err != nil {
 			l.Error("Unable close to database: ", zap.String("msg", err.Error()))
 		}
 	}(conn, ctx)
+	if err != nil {
+		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
+		return models.ResponseBalance{}, err
+	}
 
 	var ID int64
 	var Username string
@@ -172,10 +172,6 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 	cfg := config.GetConfig()
 
 	conn, err := pgx.Connect(ctx, cfg.DatabaseAddress)
-	if err != nil {
-		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
-		return err
-	}
 	defer func(conn *pgx.Conn, ctx context.Context) {
 		err := conn.Close(ctx)
 		if err != nil {
@@ -183,18 +179,26 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 		}
 	}(conn, ctx)
 
-	tx, err := conn.Begin(ctx)
-	if err != nil {
-		l.Error("failed to Begin Tx in PutWithdraw", zap.String("msg", err.Error()))
-		return err
+	if errors.Is(err, pgx.ErrNoRows) {
+		return models.ErrNoBalance()
 	}
 
+	if err != nil {
+		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
+		return err
+	}
+	tx, err := conn.Begin(ctx)
 	defer func(tx pgx.Tx) {
 		err := tx.Rollback(ctx)
 		if err != nil {
 			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
 		}
 	}(tx)
+
+	if err != nil {
+		l.Error("failed to Begin Tx in PutWithdraw", zap.String("msg", err.Error()))
+		return err
+	}
 
 	var ID int64
 	var UserName string
