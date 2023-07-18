@@ -13,7 +13,7 @@ func (e *AccrualError) Error() string { return e.Text + ": " + e.Err.Error() }
 
 func ErrNoAccrual() error {
 	return &AccrualError{
-		Text: "the user has no balance",
-		Err:  errors.New("no balance"),
+		Text: "there are no accruals for the order",
+		Err:  errors.New("there are no accruals for the order"),
 	}
 }
