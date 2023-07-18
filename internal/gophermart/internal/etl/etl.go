@@ -10,8 +10,10 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/models"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/storage"
+	"go.uber.org/zap"
 )
 
 var ch1 chan models.ResponseOrder
@@ -28,11 +30,18 @@ func InitETL(ctx context.Context, accrualAddress string) {
 }
 
 func restore(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models.ResponseOrder, accrualAddress string) {
-	fmt.Println("restore")
+	l := logger.LoggerFromContext(ctx)
+	l.Info("restore")
 	getStorage := storage.GetStorage()
-	newOrders, _ := getStorage.GetNewOrders(ctx)
-	processingOrders, _ := getStorage.GetProcessingOrders(ctx)
+	newOrders, err := getStorage.GetNewOrders(ctx)
+	if err != nil {
+		l.Error("ERROR Can't get new Orders.", zap.String("msg", err.Error()))
+	}
+	processingOrders, err := getStorage.GetProcessingOrders(ctx)
 	// TODO Добавить обработку ошибок
+	if err != nil {
+		l.Error("ERROR Can't get processing Orders.", zap.String("msg", err.Error()))
+	}
 
 	for _, order := range newOrders {
 		ch1 <- order
@@ -44,13 +53,14 @@ func restore(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models
 }
 
 func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models.ResponseOrder, accrualAddress string) {
+	l := logger.LoggerFromContext(ctx)
+	l.Info("restore")
 	getStorage := storage.GetStorage()
-	fmt.Println("registeringNewOrder")
 	for {
 		order := <-ch1
 		u, err := url.Parse(accrualAddress + "/api/orders")
 		if err != nil {
-			log.Fatal(err)
+			l.Error("ERROR Can't parse url.", zap.String("msg", err.Error()))
 		}
 
 		body := fmt.Sprintf(`{"order": "%s"}`, order.Number)
@@ -58,7 +68,7 @@ func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2
 		r := bytes.NewReader(jsonBody)
 		resp, err := http.Post(u.String(), "application/json", r)
 		if err != nil {
-			log.Fatalln(err)
+			l.Error("ERROR Can't get accrual.", zap.String("msg", err.Error()))
 		}
 
 		if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusConflict {
@@ -72,7 +82,6 @@ func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2
 
 func getAndStoreAccrualForOrder(ctx context.Context, ch2 chan models.ResponseOrder, accrualAddress string) {
 	getStorage := storage.GetStorage()
-	fmt.Println("getAccrualForOrder")
 	for {
 		order := <-ch2
 		u, err := url.Parse(fmt.Sprintf(accrualAddress+"/api/orders/%s", order.Number))
@@ -84,15 +93,20 @@ func getAndStoreAccrualForOrder(ctx context.Context, ch2 chan models.ResponseOrd
 		if err != nil {
 			log.Fatalln(err)
 		}
-		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
 
 		accrual := &models.ResponseAccrual{}
 		err = json.Unmarshal(body, accrual)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		if resp.StatusCode == http.StatusOK && accrual.Status == models.StatusProcessed {
-			getStorage.UpdateStatusOrder(ctx, order.Number, models.StatusProcessed, accrual.Accrual)
+			_, err := getStorage.UpdateStatusOrder(ctx, order.Number, models.StatusProcessed, accrual.Accrual)
+			if err != nil {
+				return
+			}
 			//ch2 <- order
 			//} else {
 			//	ch1 <- order

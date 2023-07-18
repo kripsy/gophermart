@@ -1,10 +1,12 @@
 package models
 
-import "github.com/jackc/pgx/v5/pgtype"
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
 
 type Order struct {
 	ID          int64
-	UserName    string
+	Username    string
 	Number      int64
 	Status      string
 	Accrual     int
@@ -14,7 +16,7 @@ type Order struct {
 
 type ResponseOrder struct {
 	ID          int64              `json:"-"`
-	UserName    string             `json:"-"`
+	Username    string             `json:"-"`
 	Number      string             `json:"order"`
 	Status      string             `json:"status"`
 	Accrual     int                `json:"accrual,omitempty"`
@@ -24,7 +26,7 @@ type ResponseOrder struct {
 
 type ResponseBalance struct {
 	ID          int64              `json:"-"`
-	UserName    string             `json:"-"`
+	Username    string             `json:"-"`
 	Current     int                `json:"current"`
 	Withdrawn   int                `json:"withdrawn"`
 	UploadedAt  pgtype.Timestamptz `json:"uploaded_at"`
@@ -41,6 +43,11 @@ type ResponseAccrual struct {
 	Status  string `json:"status"`
 	Accrual int    `json:"accrual"`
 }
+
+// TODO можно было бы еще что-то типо такого сделать
+//type OrderStatus string
+//и потом
+//var ( REGISTERED OrderStatus = "REGISTERED" ... )
 
 const (
 	StatusNew        = "NEW"        // Заказ загружен в систему, но не попал в обработку;
