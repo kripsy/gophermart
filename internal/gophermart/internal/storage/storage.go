@@ -81,7 +81,7 @@ func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]mode
 	}(conn, ctx)
 
 	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual >= 0 order by uploaded_at;", username)
-	//lint:ignore SA5001 should check returned error before deferring rows.Close()
+	//lint:ignore SA5001 ignore this!
 	defer rows.Close()
 
 	if err != nil {
