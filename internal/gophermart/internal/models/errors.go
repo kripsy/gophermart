@@ -17,3 +17,17 @@ func ErrNoBalance() error {
 		Err:  errors.New("no balance"),
 	}
 }
+
+type ResponseOrderError struct {
+	Text string
+	Err  error
+}
+
+func (e *ResponseOrderError) Error() string { return e.Text + ": " + e.Err.Error() }
+
+func ErrNoOrder() error {
+	return &ResponseOrderError{
+		Text: "the user has no balance",
+		Err:  errors.New("no balance"),
+	}
+}

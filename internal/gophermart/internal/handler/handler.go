@@ -192,15 +192,30 @@ func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	number, err := strconv.ParseInt(req.Number, 10, 64)
+	if err != nil {
+		l.Error("ERROR Can't get value from body.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	//422 — неверный формат номера заказа;
-	if !utils.LuhnValid(req.Number) {
+	if !utils.LuhnValid(number) {
 		l.Error("ERROR invalid order number format.")
 		rw.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 
 	getStorage := storage.GetStorage()
-	err := getStorage.PutWithdraw(h.ctx, username, req.Number, req.Accrual)
+	err = getStorage.PutWithdraw(h.ctx, username, number, req.Accrual)
+
+	//402 — на счету недостаточно средств;
+	var e *models.ResponseBalanceError
+	if errors.As(err, &e) {
+		l.Error("ERROR there are not enough funds in the account.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusPaymentRequired)
+		return
+	}
 
 	//500 — внутренняя ошибка сервера.
 	if err != nil {
@@ -209,22 +224,49 @@ func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	//402 — на счету недостаточно средств;
+	//200 — успешная обработка запроса;
+	rw.WriteHeader(http.StatusOK)
+	return
+}
+
+func (h *Handler) ReadWithdrawsHandler(rw http.ResponseWriter, r *http.Request) {
+
+	l := logger.LoggerFromContext(h.ctx)
+	l.Info("ReadWithdrawsHandler")
+	username := con.Get(r, "username")
+
+	//401 — пользователь не аутентифицирован;
+	if username == nil {
+		l.Error("ERROR User is Unauthorized")
+		rw.WriteHeader(http.StatusUnauthorized)
+	}
+
+	getStorage := storage.GetStorage()
+	withdraws, err := getStorage.GetWithdraws(h.ctx, username)
+
+	//204 — нет ни одного списания.
 	var e *models.ResponseBalanceError
 	if errors.As(err, &e) {
-		l.Error("ERROR there are not enough funds in the account.", zap.String("msg", err.Error()))
+		l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
 		rw.WriteHeader(http.StatusNoContent)
+	}
+
+	//500 — внутренняя ошибка сервера.
+	if err != nil {
+		l.Error("ERROR DB.", zap.String("msg", err.Error()))
+		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	//200 — успешная обработка запроса;
+	enc := json.NewEncoder(rw)
+	if err := enc.Encode(withdraws); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		l.Error("ERROR encoding response.", zap.String("msg", err.Error()))
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-
-}
-
-func (h *Handler) ReadWithdrawsTestHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {

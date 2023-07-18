@@ -34,8 +34,8 @@ type ResponseBalance struct {
 }
 
 type RequestWithdraw struct {
-	Number  int64 `json:"order"`
-	Accrual int   `json:"sum"`
+	Number  string `json:"order"`
+	Accrual int    `json:"sum"`
 }
 
 // TODO можно было бы еще что-то типо такого сделать
