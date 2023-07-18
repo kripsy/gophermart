@@ -135,11 +135,11 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var userLoginError *models.UserLoginError
 		if errors.As(err, &userLoginError) {
-			l.Error("wraperror login user", zap.String("msg", err.Error()))
+			l.Error("error login user", zap.String("msg", err.Error()))
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
-		l.Error("wraperror login user", zap.String("msg", err.Error()))
+		l.Error("error login user", zap.String("msg", err.Error()))
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 
@@ -148,7 +148,7 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	err = utils.AddToken(w, token, expTime)
 	if err != nil {
-		// TODO add wraperror handling
+		// TODO add error handling
 		return
 	}
 	w.WriteHeader(http.StatusOK)

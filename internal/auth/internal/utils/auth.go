@@ -53,7 +53,7 @@ func GetHash(ctx context.Context, password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
-		l.Error("wraperror GetHash", zap.String("msg", err.Error()))
+		l.Error("error GetHash", zap.String("msg", err.Error()))
 		return "", err
 	}
 	return string(bytes), nil
@@ -66,7 +66,7 @@ func IsPasswordCorrect(ctx context.Context, password, hashPassowrd []byte) error
 	err := bcrypt.CompareHashAndPassword(hashPassowrd, password)
 
 	if err != nil {
-		l.Error("wraperror compare password and hash", zap.String("msg", err.Error()))
+		l.Error("error compare password and hash", zap.String("msg", err.Error()))
 		return err
 	}
 	return nil
