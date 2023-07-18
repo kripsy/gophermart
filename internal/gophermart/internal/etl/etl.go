@@ -22,8 +22,6 @@ func GetChan() chan models.ResponseOrder {
 }
 
 func InitETL(ctx context.Context, accrualAddress string) {
-	//ch1 := make(chan models.ResponseOrder)
-	//ch2 := make(chan models.ResponseOrder)
 	go restore(ctx, ch1, ch2, accrualAddress)
 	go registeringNewOrder(ctx, ch1, ch2, accrualAddress)
 	go getAndStoreAccrualForOrder(ctx, ch2, accrualAddress)

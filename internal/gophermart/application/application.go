@@ -11,9 +11,8 @@ import (
 )
 
 type Application struct {
-	appConfig *config.Config
-	appServer *server.Server
-	//appETL  *etl.E
+	appConfig  *config.Config
+	appServer  *server.Server
 	appContext context.Context
 }
 
