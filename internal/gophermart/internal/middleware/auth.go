@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/context"
-	"github.com/kripsy/gophermart/internal/common/auth"
 	commonAuth "github.com/kripsy/gophermart/internal/common/auth"
 	commonUtils "github.com/kripsy/gophermart/internal/common/utils"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
@@ -31,7 +30,7 @@ func (m *Middleware) JWTMiddleware(next http.Handler) http.Handler {
 
 		// try get token from header
 
-		tokenString, err := auth.GetToken(w, r)
+		tokenString, err := commonAuth.GetToken(w, r)
 
 		// if token empty and url is protected -  return 401
 		if err != nil && isURLProtected {
