@@ -53,8 +53,8 @@ services:
     restart: always
     environment:
       - POSTGRES_PASSWORD=RASKkCt3PVEU
-      - POSTGRES_USER=gophermart
-      - POSTGRES_DB=gophermart
+      - POSTGRES_USER=seed
+      - POSTGRES_DB=seed
       - PGDATA=/var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
