@@ -14,6 +14,7 @@ COPY ./cmd/gophermart ./cmd/gophermart
 COPY ./db/gophermart ./db/gophermart
 COPY ./docs/gophermart ./docs/gophermart
 COPY ./internal/gophermart ./internal/gophermart
+COPY ./internal/common ./internal/common
 COPY ./*.md ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/gophermart ./cmd/gophermart/main.go

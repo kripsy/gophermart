@@ -37,7 +37,7 @@ func NewApp(ctx context.Context) (*Application, error) {
 		return nil, err
 	}
 
-	srv, err := server.InitServer(ctx)
+	srv, err := server.InitServer(ctx, cfg.PublicKey)
 	if err != nil {
 		return nil, err
 	}

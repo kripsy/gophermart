@@ -14,6 +14,7 @@ COPY ./cmd/auth ./cmd/auth
 COPY ./db/auth ./db/auth
 COPY ./docs/auth ./docs/auth
 COPY ./internal/auth ./internal/auth
+COPY ./internal/common ./internal/common
 COPY ./*.md ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/auth ./cmd/auth/main.go

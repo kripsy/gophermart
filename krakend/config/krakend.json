@@ -63,6 +63,99 @@
                     "encoding": "no-op"
                 }
             ]
+        },
+        {
+            "input_headers": [
+                "Authorization"
+            ],
+            "endpoint": "/api/user/orders",
+            "output_encoding": "no-op",
+            "method": "GET",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/user/orders",
+                    "host": [
+                        "http://gophermarket_gophermart:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/user/orders",
+            "output_encoding": "no-op",
+            "method": "POST",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/user/orders",
+                    "host": [
+                        "http://gophermarket_gophermart:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/user/balance",
+            "output_encoding": "no-op",
+            "method": "GET",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/user/balance",
+                    "host": [
+                        "http://gophermarket_gophermart:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/user/balance",
+            "output_encoding": "no-op",
+            "method": "POST",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/user/balance",
+                    "host": [
+                        "http://gophermarket_gophermart:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/user/withdrawals",
+            "output_encoding": "no-op",
+            "method": "GET",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/user/withdrawals",
+                    "host": [
+                        "http://gophermarket_gophermart:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/user/balance/withdraw",
+            "output_encoding": "no-op",
+            "method": "POST",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/user/balance/withdraw",
+                    "host": [
+                        "http://gophermarket_gophermart:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
         }
     ]
 }

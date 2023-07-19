@@ -10,6 +10,7 @@ import (
 	models "github.com/kripsy/gophermart/internal/auth/internal/models"
 	"github.com/kripsy/gophermart/internal/auth/internal/usecase"
 	"github.com/kripsy/gophermart/internal/auth/internal/utils"
+
 	"go.uber.org/zap"
 )
 
