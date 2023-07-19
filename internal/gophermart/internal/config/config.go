@@ -10,6 +10,7 @@ type Config struct {
 	DatabaseAddress string
 	AccrualAddress  string
 	LoggerLevel     string
+	MigrationsPath  string
 }
 
 var cfg = &Config{}
@@ -39,6 +40,11 @@ func InitConfig() *Config {
 		os.Getenv("LOGGER_LEVEL"),
 		"Enter logger level as Warn. Or use LOGGER_LEVEL env")
 
+	migrationsPath := flag.String(
+		"m",
+		os.Getenv("MIGRATIONS_PATH_AUTH"),
+		"Enter migrations path. Or use MIGRATIONS_PATH_AUTH env")
+
 	flag.Parse()
 
 	if *runAddress == "" {
@@ -57,11 +63,16 @@ func InitConfig() *Config {
 		*loggerLevel = "Warn"
 	}
 
+	if *migrationsPath == "" {
+		*migrationsPath = "./db/gophermart/migrations"
+	}
+
 	cfg = &Config{
 		RunAddress:      *runAddress,
 		DatabaseAddress: *databaseAddress,
 		AccrualAddress:  *accrualAddress,
 		LoggerLevel:     *loggerLevel,
+		MigrationsPath:  *migrationsPath,
 	}
 
 	return cfg

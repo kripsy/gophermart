@@ -11,6 +11,9 @@ create table if not exists public.gophermart_order
     processed_at timestamp with time zone
 );
 
+drop function if exists public.gophermart_order_check_update CASCADE;
+drop trigger if exists emp_stamp ON gophermart_order CASCADE;
+
 create function gophermart_order_check_update() returns trigger AS
 $emp_stamp$
 begin
