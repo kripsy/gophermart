@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -13,6 +12,7 @@ import (
 	"github.com/kripsy/gophermart/internal/auth/internal/mocks"
 	models "github.com/kripsy/gophermart/internal/auth/internal/models"
 	"github.com/kripsy/gophermart/internal/auth/internal/usecase"
+	"github.com/kripsy/gophermart/internal/auth/internal/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,21 +21,24 @@ type TestParams struct {
 	cfg *config.Config
 }
 
-func getParamsForTest() *TestParams {
-	// l, _ := logger.InitLogger("Debug")
-	// ctx := logger.ContextWithLogger(context.Background(), l)
-	ctx := context.Background()
-	cfg := config.InitConfig()
+var c *config.Config
 
+func getParamsForTest() *TestParams {
+	ctx := context.Background()
+	if c == nil {
+		c = config.InitConfig()
+	}
 	tp := &TestParams{
 		ctx: ctx,
-		cfg: cfg,
+		cfg: c,
 	}
 	return tp
 }
 
 func TestRegisterUserHandler(t *testing.T) {
+
 	paramTest := getParamsForTest()
+
 	type want struct {
 		contentType string
 		statusCode  int
@@ -136,29 +139,108 @@ func TestRegisterUserHandler(t *testing.T) {
 	}
 }
 
-func TestHandler_LoginUserHandler(t *testing.T) {
-	type fields struct {
-		ctx context.Context
-		uc  *usecase.UseCase
+func TestLoginUserHandler(t *testing.T) {
+
+	paramTest := getParamsForTest()
+	type want struct {
+		contentType string
+		statusCode  int
 	}
-	type args struct {
-		w http.ResponseWriter
-		r *http.Request
-	}
+
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
+		name       string
+		body       string
+		methodType string
+		want       want
 	}{
 		// TODO: Add test cases.
+		{
+			name: "success login",
+
+			body: `{
+				"login": "root",
+				"password": "correctpassword"
+			}`,
+			methodType: "POST",
+			want: want{
+				contentType: "application/json",
+				statusCode:  200,
+			},
+		},
+		{
+			name: "uncorrect request format",
+			body: `{
+				"username": "root",
+				"password": "correctpassword",
+			}`,
+			methodType: "POST",
+			want: want{
+				contentType: "application/json",
+				statusCode:  400,
+			},
+		},
+		{
+			name: "incorrect data",
+			body: `{
+				"login": "root",
+				"password": "incorrectpassword"
+			}`,
+			methodType: "POST",
+			want: want{
+				contentType: "application/json",
+				statusCode:  401,
+			},
+		},
+		{
+			name: "internal server error",
+			body: `{
+				"login": "internalerroruser",
+				"password": "qwerty"
+			}`,
+			methodType: "POST",
+			want: want{
+				contentType: "application/json",
+				statusCode:  500,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := &Handler{
-				ctx: tt.fields.ctx,
-				uc:  tt.fields.uc,
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			repo := mocks.NewMockRepository(ctrl)
+			if tt.want.statusCode == 200 {
+				newPassword, err := utils.GetHash(paramTest.ctx, "correctpassword")
+				assert.NoError(t, err)
+				repo.EXPECT().GetUserHashPassword(gomock.Any(), gomock.Any()).Return(5, newPassword, nil).AnyTimes()
 			}
-			h.LoginUserHandler(tt.args.w, tt.args.r)
+			if tt.want.statusCode == 500 {
+				repo.EXPECT().GetUserHashPassword(gomock.Any(), gomock.Any()).Return(0, "qwe", errors.New("lol")).AnyTimes()
+			}
+			if tt.want.statusCode == 400 {
+				repo.EXPECT().GetUserHashPassword(gomock.Any(), gomock.Any()).Return(0, "qwe", errors.New("lol")).AnyTimes()
+			}
+			if tt.want.statusCode == 401 {
+				repo.EXPECT().GetUserHashPassword(gomock.Any(), gomock.Any()).Return(0, "", models.NewUserLoginError("")).AnyTimes()
+			}
+
+			body := strings.NewReader(tt.body)
+
+			uc, err := usecase.InitUseCases(paramTest.ctx, repo, paramTest.cfg)
+			assert.NoError(t, err)
+			request := httptest.NewRequest(tt.methodType, "/", body)
+			w := httptest.NewRecorder()
+			ht, _ := InitHandler(paramTest.ctx, uc)
+			h := ht.LoginUserHandler
+			h(w, request)
+
+			result := w.Result()
+			assert.Equal(t, tt.want.statusCode, result.StatusCode)
+			assert.Equal(t, tt.want.contentType, result.Header.Get("Content-Type"))
+			if result.StatusCode == 200 {
+				assert.NotEmpty(t, result.Header.Get("Authorization"), "Header shouldn't be empty")
+			}
 		})
 	}
 }

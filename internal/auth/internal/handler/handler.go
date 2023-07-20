@@ -143,7 +143,7 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		l.Error("error login user", zap.String("msg", err.Error()))
-		http.Error(w, "", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 
 	}

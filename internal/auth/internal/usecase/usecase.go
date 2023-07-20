@@ -111,6 +111,7 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 	l.Debug("start LoginUser in UseCase")
 
 	userID, hashPassword, err := uc.db.GetUserHashPassword(ctx, username)
+
 	if err != nil {
 		l.Error("error GetUserHashPassword in LoginUser", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
