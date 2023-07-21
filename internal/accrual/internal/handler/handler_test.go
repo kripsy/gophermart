@@ -11,12 +11,15 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/kripsy/gophermart/internal/accrual/internal/logger"
 	mock_storage "github.com/kripsy/gophermart/internal/accrual/internal/mocks"
 	"github.com/kripsy/gophermart/internal/accrual/internal/models"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
 func TestHandler(t *testing.T) {
+	l, _ := logger.InitLogger("Warn")
 	h := &Handler{
 		ctx: context.Background(),
 	}
@@ -47,6 +50,12 @@ func TestHandler(t *testing.T) {
 			h.TestHandler(rw, req)
 
 			resp := rw.Result()
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+					l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
+				}
+			}(resp.Body)
 
 			if tt.expectedCode != 0 {
 				assert.Equal(t, tt.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
@@ -66,6 +75,7 @@ func TestHandler(t *testing.T) {
 }
 
 func TestHandler_ReadOrdersHandler(t *testing.T) {
+	l, _ := logger.InitLogger("Warn")
 	h := &Handler{
 		ctx: context.Background(),
 	}
@@ -75,11 +85,11 @@ func TestHandler_ReadOrdersHandler(t *testing.T) {
 
 	mockStore := mock_storage.NewMockStore(mockCtrl)
 
-	create_time := pgtype.Timestamptz{
+	createTime := pgtype.Timestamptz{
 		Time:             time.Now(),
 		InfinityModifier: 1,
 	}
-	mockStore.EXPECT().PutOrder(h.ctx, 105626471848586).Return(models.Order{ID: 1, Number: 105626471848586, Status: "PROCESSED", Accrual: 586, UploadedAt: create_time, ProcessedAt: create_time}, nil).AnyTimes()
+	mockStore.EXPECT().PutOrder(h.ctx, 105626471848586).Return(models.Order{ID: 1, Number: 105626471848586, Status: "PROCESSED", Accrual: 586, UploadedAt: createTime, ProcessedAt: createTime}, nil).AnyTimes()
 
 	tests := []struct {
 		name                string
@@ -108,6 +118,12 @@ func TestHandler_ReadOrdersHandler(t *testing.T) {
 			h.ReadOrdersHandler(mockStore)(rw, req)
 
 			resp := rw.Result()
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+					l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
+				}
+			}(resp.Body)
 
 			if tt.expectedCode != 0 {
 				assert.Equal(t, tt.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
@@ -126,6 +142,7 @@ func TestHandler_ReadOrdersHandler(t *testing.T) {
 }
 
 func TestHandlerCreateOrderHandler(t *testing.T) {
+	l, _ := logger.InitLogger("Warn")
 	h := &Handler{
 		ctx: context.Background(),
 	}
@@ -210,6 +227,12 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 			h.CreateOrderHandler(mockStore)(rw, req)
 
 			resp := rw.Result()
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+					l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
+				}
+			}(resp.Body)
 
 			if tt.expectedCode != 0 {
 				assert.Equal(t, tt.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
