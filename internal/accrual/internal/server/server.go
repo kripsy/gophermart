@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/kripsy/gophermart/internal/accrual/internal/handler"
 	"github.com/kripsy/gophermart/internal/accrual/internal/logger"
+	"github.com/kripsy/gophermart/internal/accrual/internal/storage"
 	"go.uber.org/zap"
 )
 
@@ -23,10 +24,10 @@ func InitServer(ctx context.Context) (*Server, error) {
 		l.Error("Error in Init server", zap.String("msg", err.Error()))
 		return nil, err
 	}
-
-	m.Router.Get("/api/orders/{number}", h.ReadOrdersHandler) // получение информации о расчёте начислений баллов лояльности;
-	m.Router.Post("/api/orders", h.CreateOrderHandler)        // регистрация нового совершённого заказа;
-	m.Router.Post("/api/goods", h.CreateGoodsHandler)         // регистрация информации о новой механике вознаграждения за товар.
+	store := storage.GetStorage()
+	m.Router.Get("/api/orders/{number}", h.ReadOrdersHandler(store)) // получение информации о расчёте начислений баллов лояльности;
+	m.Router.Post("/api/orders", h.CreateOrderHandler(store))        // регистрация нового совершённого заказа;
+	m.Router.Post("/api/goods", h.CreateGoodsHandler)                // регистрация информации о новой механике вознаграждения за товар.
 	m.Router.HandleFunc("/test", h.TestHandler)
 
 	return m, nil
