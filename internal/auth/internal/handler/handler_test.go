@@ -129,7 +129,8 @@ func TestRegisterUserHandler(t *testing.T) {
 			h := ht.RegisterUserHandler
 			h(w, request)
 			result := w.Result()
-
+			err = result.Body.Close()
+			assert.NoError(t, err)
 			assert.Equal(t, tt.want.statusCode, result.StatusCode)
 			assert.Equal(t, tt.want.contentType, result.Header.Get("Content-Type"))
 			if result.StatusCode == 200 {
@@ -236,6 +237,8 @@ func TestLoginUserHandler(t *testing.T) {
 			h(w, request)
 
 			result := w.Result()
+			err = result.Body.Close()
+			assert.NoError(t, err)
 			assert.Equal(t, tt.want.statusCode, result.StatusCode)
 			assert.Equal(t, tt.want.contentType, result.Header.Get("Content-Type"))
 			if result.StatusCode == 200 {
