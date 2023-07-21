@@ -45,7 +45,7 @@ func TestHandler(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rw := httptest.NewRecorder()
-			req := httptest.NewRequest(tt.method, tt.url, nil)
+			req := httptest.NewRequest(tt.method, tt.url, bytes.NewReader(tt.body))
 
 			h.TestHandler(rw, req)
 

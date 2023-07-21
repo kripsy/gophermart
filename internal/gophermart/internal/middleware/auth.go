@@ -52,8 +52,14 @@ func (m *Middleware) JWTMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		//401 — пользователь не аутентифицирован;
+		if claims.Username == "" {
+			l.Error("ERROR User is Unauthorized")
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
 		context.Set(r, "username", claims.Username)
-		//context.Set(r, "username", nil)
 		next.ServeHTTP(w, r)
 	})
 }
