@@ -50,7 +50,52 @@
             ]
         },
         {
+            "endpoint": "/api/login",
+            "output_encoding": "no-op",
+            "method": "POST",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/login",
+                    "host": [
+                        "http://gophermarket_auth:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/user/swagger/{level1}",
+            "output_encoding": "no-op",
+            "method": "GET",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/swagger/{level1}",
+                    "host": [
+                        "http://gophermarket_auth:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
             "endpoint": "/api/user/register",
+            "output_encoding": "no-op",
+            "method": "POST",
+            "timeout": "15000ms",
+            "backend": [
+                {
+                    "url_pattern": "/api/register",
+                    "host": [
+                        "http://gophermarket_auth:8080"
+                    ],
+                    "encoding": "no-op"
+                }
+            ]
+        },
+        {
+            "endpoint": "/api/register",
             "output_encoding": "no-op",
             "method": "POST",
             "timeout": "15000ms",
