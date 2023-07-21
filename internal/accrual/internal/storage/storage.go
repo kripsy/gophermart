@@ -11,7 +11,6 @@ import (
 	"github.com/kripsy/gophermart/internal/accrual/internal/models"
 	"go.uber.org/zap"
 
-	_ "github.com/golang/mock/mockgen/model"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
