@@ -103,6 +103,18 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ShowAccount godoc
+// @Summary      Login
+// @Description  Login as user
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        user   body      models.User  true  "User login data"
+// @Success      200
+// @Failure      400
+// @Failure      401
+// @Failure      500
+// @Router       /api/login [post]
 // LoginUserHandler accepts a username and password in json format.
 // If we have success  user login, we insert token into cookie `token` and header `Authorization`.
 func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
