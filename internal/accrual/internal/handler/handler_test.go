@@ -50,12 +50,6 @@ func TestHandler(t *testing.T) {
 			h.TestHandler(rw, req)
 
 			resp := rw.Result()
-			defer func(Body io.ReadCloser) {
-				err := Body.Close()
-				if err != nil {
-					l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
-				}
-			}(resp.Body)
 
 			if tt.expectedCode != 0 {
 				assert.Equal(t, tt.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
@@ -68,6 +62,11 @@ func TestHandler(t *testing.T) {
 
 			if tt.expectedContentType != "" {
 				assert.Equal(t, tt.expectedContentType, resp.Header.Get("Content-Type"), "Content-Type ответа не совпадает с ожидаемым")
+			}
+
+			err := resp.Body.Close()
+			if err != nil {
+				l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
 			}
 		})
 
@@ -118,12 +117,6 @@ func TestHandler_ReadOrdersHandler(t *testing.T) {
 			h.ReadOrdersHandler(mockStore)(rw, req)
 
 			resp := rw.Result()
-			defer func(Body io.ReadCloser) {
-				err := Body.Close()
-				if err != nil {
-					l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
-				}
-			}(resp.Body)
 
 			if tt.expectedCode != 0 {
 				assert.Equal(t, tt.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
@@ -136,6 +129,11 @@ func TestHandler_ReadOrdersHandler(t *testing.T) {
 
 			if tt.expectedContentType != "" {
 				assert.Equal(t, tt.expectedContentType, resp.Header.Get("Content-Type"), "Content-Type ответа не совпадает с ожидаемым")
+			}
+
+			err := resp.Body.Close()
+			if err != nil {
+				l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
 			}
 		})
 	}
@@ -227,12 +225,6 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 			h.CreateOrderHandler(mockStore)(rw, req)
 
 			resp := rw.Result()
-			defer func(Body io.ReadCloser) {
-				err := Body.Close()
-				if err != nil {
-					l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
-				}
-			}(resp.Body)
 
 			if tt.expectedCode != 0 {
 				assert.Equal(t, tt.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
@@ -245,6 +237,11 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 
 			if tt.expectedContentType != "" {
 				assert.Equal(t, tt.expectedContentType, resp.Header.Get("Content-Type"), "Content-Type ответа не совпадает с ожидаемым")
+			}
+
+			err := resp.Body.Close()
+			if err != nil {
+				l.Error("ERROR Can't close body.", zap.String("msg", err.Error()))
 			}
 		})
 	}
