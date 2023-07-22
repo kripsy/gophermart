@@ -10,6 +10,9 @@ create table if not exists public.accrual
     processed_at timestamp with time zone
 );
 
+drop function if exists  public.accrual_check_update CASCADE;
+drop trigger if exists emp_stamp ON accrual CASCADE;
+
 create function accrual_check_update() returns trigger AS
 $emp_stamp$
 begin
@@ -18,12 +21,11 @@ begin
 end;
 $emp_stamp$ LANGUAGE plpgsql;
 
+
 create trigger emp_stamp
     before update
-    on accrual
+    on public.accrual
     for each row
 execute function accrual_check_update();
-
-create index accrual_status_index_hash on public.accrual using hash (status);
 
 commit;

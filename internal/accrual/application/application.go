@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kripsy/gophermart/internal/accrual/internal/config"
+	"github.com/kripsy/gophermart/internal/accrual/internal/db"
 	"github.com/kripsy/gophermart/internal/accrual/internal/logger"
 	"github.com/kripsy/gophermart/internal/accrual/internal/server"
 	"go.uber.org/zap"
@@ -33,6 +34,12 @@ func NewApp(ctx context.Context) (*Application, error) {
 	l, err := logger.InitLogger(cfg.LoggerLevel)
 	ctx = logger.ContextWithLogger(ctx, l)
 	if err != nil {
+		return nil, err
+	}
+
+	_, err = db.InitDB(ctx, cfg.DatabaseAddress, cfg.MigrationsPath)
+	if err != nil {
+		l.Error("error init DB", zap.String("msg", err.Error()))
 		return nil, err
 	}
 
