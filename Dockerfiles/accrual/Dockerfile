@@ -14,6 +14,7 @@ COPY ./cmd/accrual ./cmd/accrual
 COPY ./db/accrual ./db/accrual
 COPY ./docs/accrual ./docs/accrual
 COPY ./internal/accrual ./internal/accrual
+COPY ./internal/common ./internal/common
 COPY ./*.md ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/accrual ./cmd/accrual/main.go

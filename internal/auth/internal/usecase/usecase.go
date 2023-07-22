@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/kripsy/gophermart/internal/auth/internal/config"
-	"github.com/kripsy/gophermart/internal/auth/internal/db"
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
 	"github.com/kripsy/gophermart/internal/auth/internal/models"
 	"github.com/kripsy/gophermart/internal/auth/internal/utils"
@@ -17,13 +16,20 @@ import (
 	"go.uber.org/zap"
 )
 
+type Repository interface {
+	RegisterUser(ctx context.Context, username, hashPassword string, id int) error
+	IsUserExists(ctx context.Context, username string) (bool, error)
+	GetNextUserID(ctx context.Context) (int, error)
+	GetUserHashPassword(ctx context.Context, username string) (int, string, error)
+}
+
 type UseCase struct {
 	ctx context.Context
-	db  *db.DB
+	db  Repository
 	cfg *config.Config
 }
 
-func InitUseCases(ctx context.Context, db *db.DB, cfg *config.Config) (*UseCase, error) {
+func InitUseCases(ctx context.Context, db Repository, cfg *config.Config) (*UseCase, error) {
 	uc := &UseCase{
 		ctx: ctx,
 		db:  db,
@@ -88,7 +94,7 @@ func (uc *UseCase) RegisterUser(ctx context.Context, username, password string) 
 
 	l.Debug("generate new token", zap.String("msg", username))
 
-	tokenString, expAt, err := utils.BuildJWTString(ctx, newID, username, uc.cfg.SecretKey, uc.cfg.TokenExp)
+	tokenString, expAt, err := utils.BuildJWTString(ctx, newID, username, uc.cfg.PrivateKey, uc.cfg.TokenExp)
 
 	if err != nil {
 		l.Error("error BuildJWTString", zap.String("msg", err.Error()))
@@ -105,6 +111,7 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 	l.Debug("start LoginUser in UseCase")
 
 	userID, hashPassword, err := uc.db.GetUserHashPassword(ctx, username)
+
 	if err != nil {
 		l.Error("error GetUserHashPassword in LoginUser", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
@@ -116,7 +123,7 @@ func (uc *UseCase) LoginUser(ctx context.Context, username, password string) (st
 		return "", time.Time{}, models.NewUserLoginError(username)
 	}
 
-	tokenString, expAt, err := utils.BuildJWTString(ctx, userID, username, uc.cfg.SecretKey, uc.cfg.TokenExp)
+	tokenString, expAt, err := utils.BuildJWTString(ctx, userID, username, uc.cfg.PrivateKey, uc.cfg.TokenExp)
 	if err != nil {
 		l.Error("error BuildJWTString", zap.String("msg", err.Error()))
 		return "", time.Time{}, err

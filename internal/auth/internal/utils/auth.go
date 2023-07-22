@@ -2,25 +2,29 @@ package utils
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/kripsy/gophermart/internal/auth/internal/logger"
+	common "github.com/kripsy/gophermart/internal/common/auth"
+
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Claims struct {
-	jwt.RegisteredClaims
-	UserID   int
-	Username string
-}
-
-func BuildJWTString(ctx context.Context, userID int, username, secretKey string, expTime time.Duration) (string, time.Time, error) {
+func BuildJWTString(ctx context.Context, userID int, username, privateKey string, expTime time.Duration) (string, time.Time, error) {
 	l := logger.LoggerFromContext(ctx)
+
+	privateKeyPEM, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKey))
+	if err != nil {
+		l.Error("failed in BuildJWTString to ParseRSAPrivateKeyFromPEM", zap.String("msg", err.Error()))
+		return "", time.Time{}, err
+	}
+
 	expAt := time.Now().Add(expTime)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, common.Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expAt),
 		},
@@ -28,11 +32,12 @@ func BuildJWTString(ctx context.Context, userID int, username, secretKey string,
 		Username: username,
 	})
 
-	tokenString, err := token.SignedString([]byte(secretKey))
+	tokenString, err := token.SignedString(privateKeyPEM)
 	if err != nil {
 		l.Error("failed in BuildJWTString", zap.String("msg", err.Error()))
 		return "", time.Time{}, err
 	}
+	fmt.Println(tokenString)
 	return tokenString, expAt, nil
 }
 

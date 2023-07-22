@@ -38,13 +38,17 @@ func NewApp(ctx context.Context) (*Application, error) {
 		return nil, err
 	}
 
+	//<<<<<<< HEAD
 	_, err = db.InitDB(ctx, cfg.DatabaseAddress, cfg.MigrationsPath)
 	if err != nil {
 		l.Error("error init DB", zap.String("msg", err.Error()))
 		return nil, err
 	}
 
-	srv, err := server.InitServer(ctx)
+	//srv, err := server.InitServer(ctx)
+	//=======
+	srv, err := server.InitServer(ctx, cfg.PublicKey)
+	//>>>>>>> dev
 	if err != nil {
 		return nil, err
 	}
