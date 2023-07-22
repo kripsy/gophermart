@@ -10,11 +10,8 @@ type Config struct {
 	DatabaseAddress string
 	AccrualAddress  string
 	LoggerLevel     string
-	//<<<<<<< HEAD
-	MigrationsPath string
-	//=======
-	PublicKey string
-	//>>>>>>> dev
+	MigrationsPath  string
+	PublicKey       string
 }
 
 var cfg = &Config{}
@@ -54,17 +51,14 @@ func InitConfig() *Config {
 		os.Getenv("LOGGER_LEVEL"),
 		"Enter logger level as Warn. Or use LOGGER_LEVEL env")
 
-	//<<<<<<< HEAD
 	migrationsPath := flag.String(
 		"m",
 		os.Getenv("MIGRATIONS_PATH_AUTH"),
 		"Enter migrations path. Or use MIGRATIONS_PATH_AUTH env")
-	//=======
 	publicKey := flag.String(
 		"publicKey",
 		os.Getenv("PUBLIC_KEY"),
 		"Enter public key. Or use PUBLIC_KEY env")
-	//>>>>>>> dev
 
 	flag.Parse()
 
@@ -84,14 +78,11 @@ func InitConfig() *Config {
 		*loggerLevel = "Warn"
 	}
 
-	//<<<<<<< HEAD
 	if *migrationsPath == "" {
 		*migrationsPath = "./db/gophermart/migrations"
 	}
-	//=======
 	if *publicKey == "" {
 		*publicKey = defaultPublicKey
-		//>>>>>>> dev
 	}
 
 	cfg = &Config{
@@ -99,11 +90,8 @@ func InitConfig() *Config {
 		DatabaseAddress: *databaseAddress,
 		AccrualAddress:  *accrualAddress,
 		LoggerLevel:     *loggerLevel,
-		//<<<<<<< HEAD
-		MigrationsPath: *migrationsPath,
-		//=======
-		PublicKey: *publicKey,
-		//>>>>>>> dev
+		MigrationsPath:  *migrationsPath,
+		PublicKey:       *publicKey,
 	}
 
 	return cfg
