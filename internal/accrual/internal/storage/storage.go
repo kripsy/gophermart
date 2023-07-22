@@ -14,11 +14,16 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
+type Store interface {
+	PutOrder(ctx context.Context, number int64) (models.Order, error)
+	GetOrder(ctx context.Context, number int64) (models.Order, error)
+}
+
 type DBStorage struct{}
 
-var s = DBStorage{}
+var s Store = &DBStorage{}
 
-func GetStorage() DBStorage {
+func GetStorage() Store {
 	return s
 }
 

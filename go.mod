@@ -19,7 +19,9 @@ require (
 	golang.org/x/crypto v0.11.0
 )
 
-require github.com/golang/mock v1.6.0 // indirect
+require github.com/golang/mock v1.6.0
+
+require github.com/stretchr/testify v1.8.4
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -37,7 +39,7 @@ require (
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
+	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect

@@ -35,13 +35,6 @@ func (h *Handler) CreateOrderHandler(rw http.ResponseWriter, r *http.Request) {
 	l.Info("CreateOrderHandler")
 	username := con.Get(r, "username")
 
-	//401 — пользователь не аутентифицирован;
-	if username == nil {
-		l.Error("ERROR User is Unauthorized")
-		rw.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
 	//400 — неверный формат запроса;
 	byteNumber, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -109,13 +102,6 @@ func (h *Handler) ReadOrdersHandler(rw http.ResponseWriter, r *http.Request) {
 	username := con.Get(r, "username")
 	rw.Header().Set("Content-Type", "application/json")
 
-	//401 — пользователь не аутентифицирован;
-	if username == nil {
-		l.Error("ERROR User is Unauthorized")
-		rw.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
 	getStorage := storage.GetStorage()
 	orders, err := getStorage.GetOrders(h.ctx, username)
 
@@ -146,13 +132,6 @@ func (h *Handler) ReadUserBalanceHandler(rw http.ResponseWriter, r *http.Request
 	l := logger.LoggerFromContext(h.ctx)
 	l.Info("ReadUserBalanceHandler")
 	username := con.Get(r, "username")
-
-	//401 — пользователь не аутентифицирован;
-	if username == nil {
-		l.Error("ERROR User is Unauthorized")
-		rw.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 
 	getStorage := storage.GetStorage()
 	balance, err := getStorage.GetBalance(h.ctx, username)
@@ -186,13 +165,6 @@ func (h *Handler) CreateWithdrawHandler(rw http.ResponseWriter, r *http.Request)
 	l := logger.LoggerFromContext(h.ctx)
 	l.Info("CreateOrderHandler")
 	username := con.Get(r, "username")
-
-	//401 — пользователь не аутентифицирован;
-	if username == nil {
-		l.Error("ERROR User is Unauthorized")
-		rw.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 
 	var req models.RequestWithdraw
 	dec := json.NewDecoder(r.Body)
@@ -245,12 +217,6 @@ func (h *Handler) ReadWithdrawsHandler(rw http.ResponseWriter, r *http.Request) 
 	l := logger.LoggerFromContext(h.ctx)
 	l.Info("ReadWithdrawsHandler")
 	username := con.Get(r, "username")
-
-	//401 — пользователь не аутентифицирован;
-	if username == nil {
-		l.Error("ERROR User is Unauthorized")
-		rw.WriteHeader(http.StatusUnauthorized)
-	}
 
 	getStorage := storage.GetStorage()
 	withdraws, err := getStorage.GetWithdraws(h.ctx, username)
