@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/context"
-	commonAuth "github.com/kripsy/gophermart/internal/common/auth"
 	commonUtils "github.com/kripsy/gophermart/internal/common/utils"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"go.uber.org/zap"
@@ -30,36 +29,30 @@ func (m *Middleware) JWTMiddleware(next http.Handler) http.Handler {
 
 		// try get token from header
 
-		tokenString, err := commonAuth.GetToken(w, r)
+		//tokenString, err := commonAuth.GetToken(w, r)
 
-		// if token empty and url is protected -  return 401
-		if err != nil && isURLProtected {
-			l.Debug("error split bearer token", zap.String("msg", err.Error()))
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
+		//// if token empty and url is protected -  return 401
+		//if err != nil && isURLProtected {
+		//	l.Debug("error split bearer token", zap.String("msg", err.Error()))
+		//	w.WriteHeader(http.StatusUnauthorized)
+		//	return
+		//}
+		//
+		//claims, err := commonAuth.Decrypt(tokenString, m.PublicKey)
+		//if err != nil && isURLProtected {
+		//	l.Debug("error decrypt token", zap.String("msg", err.Error()))
+		//	w.WriteHeader(http.StatusUnauthorized)
+		//	return
+		//}
+		//
+		//if claims.Username == "" && isURLProtected {
+		//	l.Debug("user in token is empty", zap.String("msg", err.Error()))
+		//	w.WriteHeader(http.StatusUnauthorized)
+		//	return
+		//}
 
-		claims, err := commonAuth.Decrypt(tokenString, m.PublicKey)
-		if err != nil && isURLProtected {
-			l.Debug("error decrypt token", zap.String("msg", err.Error()))
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		if claims.Username == "" && isURLProtected {
-			l.Debug("user in token is empty", zap.String("msg", err.Error()))
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		//401 — пользователь не аутентифицирован;
-		if claims.Username == "" {
-			l.Error("ERROR User is Unauthorized")
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		context.Set(r, "username", claims.Username)
+		//context.Set(r, "username", claims.Username)
+		context.Set(r, "username", "username")
 		next.ServeHTTP(w, r)
 	})
 }

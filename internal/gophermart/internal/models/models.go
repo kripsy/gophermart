@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -15,22 +17,22 @@ type Order struct {
 }
 
 type ResponseOrder struct {
-	ID          int64              `json:"-"`
-	Username    string             `json:"-"`
-	Number      string             `json:"order"`
-	Status      string             `json:"status"`
-	Accrual     int                `json:"accrual,omitempty"`
-	UploadedAt  pgtype.Timestamptz `json:"uploaded_at"`
-	ProcessedAt pgtype.Timestamptz `json:"-"`
+	ID          int64     `json:"-"`
+	Username    string    `json:"-"`
+	Number      string    `json:"order"`
+	Status      string    `json:"status"`
+	Accrual     int       `json:"accrual,omitempty"`
+	UploadedAt  time.Time `json:"uploaded_at"`
+	ProcessedAt time.Time `json:"-"`
 }
 
 type ResponseBalance struct {
-	ID          int64              `json:"-"`
-	Username    string             `json:"-"`
-	Current     int                `json:"current"`
-	Withdrawn   int                `json:"withdrawn"`
-	UploadedAt  pgtype.Timestamptz `json:"uploaded_at"`
-	ProcessedAt pgtype.Timestamptz `json:"-"`
+	ID          int64     `json:"-"`
+	Username    string    `json:"-"`
+	Current     int       `json:"current"`
+	Withdrawn   int       `json:"withdrawn"`
+	UploadedAt  time.Time `json:"uploaded_at"`
+	ProcessedAt time.Time `json:"-"`
 }
 
 type RequestWithdraw struct {
