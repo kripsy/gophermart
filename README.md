@@ -52,3 +52,10 @@ git fetch template && git checkout template/master .github
 ```
 
 Затем добавьте полученные изменения в свой репозиторий.
+
+# example run test
+
+go test ./cmd/gophermarttest/gophermart_auth_test.go -gophermart-binary-path "~/go/src/yandex_education/goph
+ermart/bin/gophermart" -accrual-binary-path "~/go/src/yandex_education/gophermart/bin/accrual" -gophermart-database-uri "postgres://gophermart:gopher
+martpwd@127.0.0.1:5432/gophermart?sslmode=disable" -gophermart-host "127.0.0.1" -accrual-database-uri "postgres://accrual:accrualpwd@127.0.0.1:5432/accrual?sslmode=
+disable" -gophermart-port 8080 -accrual-host "127.0.0.1" --accrual-port 8080
