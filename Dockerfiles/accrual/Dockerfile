@@ -9,7 +9,7 @@ COPY ./go.mod ./go.mod
 COPY ./go.sum ./go.sum
 RUN go mod download
 
-COPY ./bin ./bin
+RUN mkdir -p -m 0600 ./bin
 COPY ./cmd/accrual ./cmd/accrual
 COPY ./db/accrual ./db/accrual
 COPY ./docs/accrual ./docs/accrual
