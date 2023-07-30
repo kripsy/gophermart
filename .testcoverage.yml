@@ -32,13 +32,15 @@ exclude:
   paths:
     - \.pb\.go$    # excludes all protobuf generated files
     - ^pkg/bar     # exclude package `pkg/bar`
-    - ^mocks
-    - ^utils
-    - ^models
-    - ^logger
-    - ^config
-    - ^accrual
-    - internal/accrual
+    - internal/accrual/internal/config
+    - internal/accrual/internal/logger
+    - internal/accrual/internal/mocks
+    - internal/gophermart/internal/config
+    - internal/gophermart/internal/logger
+    - internal/gophermart/internal/mocks
+    - internal/auth/internal/config
+    - internal/auth/internal/logger
+    - internal/auth/internal/mocks
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by
