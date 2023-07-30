@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 )
 
 type AccrualError struct {
@@ -9,7 +10,7 @@ type AccrualError struct {
 	Err  error
 }
 
-func (e *AccrualError) Error() string { return e.Text + ": " + e.Err.Error() }
+func (e *AccrualError) Error() string { return fmt.Sprintf("%s : %s", e.Text, e.Err.Error()) }
 
 func ErrNoAccrual() error {
 	return &AccrualError{
