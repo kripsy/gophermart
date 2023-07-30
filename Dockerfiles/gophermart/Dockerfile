@@ -9,7 +9,7 @@ COPY ./go.mod ./go.mod
 COPY ./go.sum ./go.sum
 RUN go mod download
 
-COPY ./bin ./bin
+RUN mkdir -p -m 0600 ./bin
 COPY ./cmd/gophermart ./cmd/gophermart
 COPY ./db/gophermart ./db/gophermart
 COPY ./docs/gophermart ./docs/gophermart

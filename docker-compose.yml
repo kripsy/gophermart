@@ -66,6 +66,7 @@ services:
   gophermarket_krakend_ce:
     image: devopsfaith/krakend:latest
     container_name: gophermarket_krakend_ce
+    restart: always
     volumes:
       - ./krakend/config:/etc/krakend
     ports:
