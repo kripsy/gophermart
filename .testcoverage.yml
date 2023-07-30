@@ -37,6 +37,7 @@ exclude:
     - ^models
     - ^logger
     - ^config
+    - ^accrual
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by
