@@ -15,11 +15,22 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
+type Store interface {
+	PutOrder(ctx context.Context, userName interface{}, number int64) (models.Order, error)
+	GetOrders(ctx context.Context, username interface{}) ([]models.ResponseOrder, error)
+	GetProcessingOrders(ctx context.Context) ([]models.ResponseOrder, error)
+	GetNewOrders(ctx context.Context) ([]models.ResponseOrder, error)
+	GetBalance(ctx context.Context, userName interface{}) (models.ResponseBalance, error)
+	PutWithdraw(ctx context.Context, userName interface{}, number int64, accrual int) error
+	GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseOrder, error)
+	UpdateStatusOrder(ctx context.Context, number string, status string, accrual int) (models.ResponseOrder, error)
+}
+
 type DBStorage struct{}
 
-var s = DBStorage{}
+var s Store = &DBStorage{}
 
-func GetStorage() DBStorage {
+func GetStorage() Store {
 	return s
 }
 
@@ -115,8 +126,8 @@ func (s *DBStorage) GetOrders(ctx context.Context, username interface{}) ([]mode
 		order.Number = strconv.FormatInt(Number, 10)
 		order.Status = Status
 		order.Accrual = Accrual
-		order.UploadedAt = UploadedAt
-		order.ProcessedAt = ProcessedAt
+		order.UploadedAt = UploadedAt.Time
+		order.ProcessedAt = ProcessedAt.Time
 
 		orders = append(orders, order)
 	}
@@ -172,8 +183,8 @@ func (s *DBStorage) GetProcessingOrders(ctx context.Context) ([]models.ResponseO
 		order.Number = strconv.FormatInt(Number, 10)
 		order.Status = Status
 		order.Accrual = Accrual
-		order.UploadedAt = UploadedAt
-		order.ProcessedAt = ProcessedAt
+		order.UploadedAt = UploadedAt.Time
+		order.ProcessedAt = ProcessedAt.Time
 
 		orders = append(orders, order)
 	}
@@ -227,8 +238,8 @@ func (s *DBStorage) GetNewOrders(ctx context.Context) ([]models.ResponseOrder, e
 		order.Number = strconv.FormatInt(Number, 10)
 		order.Status = Status
 		order.Accrual = Accrual
-		order.UploadedAt = UploadedAt
-		order.ProcessedAt = ProcessedAt
+		order.UploadedAt = UploadedAt.Time
+		order.ProcessedAt = ProcessedAt.Time
 
 		orders = append(orders, order)
 	}
@@ -276,8 +287,8 @@ func (s *DBStorage) GetBalance(ctx context.Context, userName interface{}) (model
 	balance.Username = Username
 	balance.Current = Current
 	balance.Withdrawn = Withdrawn
-	balance.UploadedAt = UploadedAt
-	balance.ProcessedAt = ProcessedAt
+	balance.UploadedAt = UploadedAt.Time
+	balance.ProcessedAt = ProcessedAt.Time
 
 	return balance, nil
 }
@@ -393,8 +404,8 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 		order.Number = strconv.FormatInt(Number, 10)
 		order.Status = Status
 		order.Accrual = -Accrual
-		order.UploadedAt = UploadedAt
-		order.ProcessedAt = ProcessedAt
+		order.UploadedAt = UploadedAt.Time
+		order.ProcessedAt = ProcessedAt.Time
 
 		orders = append(orders, order)
 	}
@@ -437,8 +448,8 @@ func (s *DBStorage) UpdateStatusOrder(ctx context.Context, number string, status
 	order.Number = Number
 	order.Status = Status
 	order.Accrual = Accrual
-	order.UploadedAt = UploadedAt
-	order.ProcessedAt = ProcessedAt
+	order.UploadedAt = UploadedAt.Time
+	order.ProcessedAt = ProcessedAt.Time
 
 	return order, nil
 }

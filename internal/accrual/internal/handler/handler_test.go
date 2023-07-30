@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -102,7 +103,7 @@ func TestHandler_ReadOrdersHandler(t *testing.T) {
 		{
 			name:                "TestHandler",
 			method:              http.MethodGet,
-			url:                 "http://127.0.0.1:8080//api/orders/1234567890", //Не могу в хендлере получить номер заказа
+			url:                 "http://127.0.0.1:8080/api/orders/1234567890", //Не могу в хендлере получить номер заказа
 			body:                nil,
 			expectedCode:        http.StatusBadRequest,
 			expectedBody:        "",
@@ -160,6 +161,7 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 	}
 	mockStore.EXPECT().PutOrder(gomock.Any(), int64(12351)).Return(models.Order{ID: 1, Number: 12351, Status: "PROCESSED", Accrual: 586, UploadedAt: nowTime, ProcessedAt: nowTime}, nil).AnyTimes()
 	mockStore.EXPECT().PutOrder(gomock.Any(), int64(12369)).Return(models.Order{ID: 1, Number: 12369, Status: "PROCESSED", Accrual: 586, UploadedAt: nowTime, ProcessedAt: zeroTime}, nil).AnyTimes()
+	mockStore.EXPECT().PutOrder(gomock.Any(), int64(12377)).Return(models.Order{}, errors.New("Error for test")).AnyTimes()
 
 	tests := []struct {
 		name                string
@@ -182,7 +184,7 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 		{
 			name:                "CreateOrderHandler 400 wrong number",
 			method:              http.MethodPost,
-			url:                 "http://127.0.0.1:8080//api/orders",
+			url:                 "http://127.0.0.1:8080/api/orders",
 			body:                []byte(`{"order": "a12344", "goods": [{"description": "Стиральная машинка LG", "price": 47399}, {"description": "Телевизор DLsnXYotclMT", "price": 14599}]}`),
 			expectedCode:        http.StatusBadRequest,
 			expectedBody:        "",
@@ -191,16 +193,25 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 		{
 			name:                "CreateOrderHandler 422 Luhn is invalid",
 			method:              http.MethodPost,
-			url:                 "http://127.0.0.1:8080//api/orders",
+			url:                 "http://127.0.0.1:8080/api/orders",
 			body:                []byte(`{"order": "12345", "goods": [{"description": "Стиральная машинка LG", "price": 47399}, {"description": "Телевизор DLsnXYotclMT", "price": 14599}]}`),
 			expectedCode:        http.StatusUnprocessableEntity,
 			expectedBody:        "",
 			expectedContentType: "",
 		},
 		{
+			name:                "CreateOrderHandler 500 InternalServerError",
+			method:              http.MethodPost,
+			url:                 "http://127.0.0.1:8080/api/orders",
+			body:                []byte(`{"order": "12377", "goods": [{"description": "Стиральная машинка LG", "price": 47399}, {"description": "Телевизор DLsnXYotclMT", "price": 14599}]}`),
+			expectedCode:        http.StatusInternalServerError,
+			expectedBody:        "",
+			expectedContentType: "",
+		},
+		{
 			name:                "CreateOrderHandler 409",
 			method:              http.MethodPost,
-			url:                 "http://127.0.0.1:8080//api/orders",
+			url:                 "http://127.0.0.1:8080/api/orders",
 			body:                []byte(`{"order": "12351", "goods": [{"description": "Стиральная машинка LG", "price": 47399}, {"description": "Телевизор DLsnXYotclMT", "price": 14599}]}`),
 			expectedCode:        http.StatusConflict,
 			expectedBody:        "",
@@ -209,7 +220,7 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 		{
 			name:                "CreateOrderHandler 202",
 			method:              http.MethodPost,
-			url:                 "http://127.0.0.1:8080//api/orders",
+			url:                 "http://127.0.0.1:8080/api/orders",
 			body:                []byte(`{"order": "12369", "goods": [{"description": "Стиральная машинка LG", "price": 47399}, {"description": "Телевизор DLsnXYotclMT", "price": 14599}]}`),
 			expectedCode:        http.StatusAccepted,
 			expectedBody:        "",
