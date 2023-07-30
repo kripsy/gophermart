@@ -38,6 +38,7 @@ exclude:
     - ^logger
     - ^config
     - ^accrual
+    - internal/accrual
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by
