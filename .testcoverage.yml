@@ -12,13 +12,13 @@ threshold:
   # The minimum coverage that each file should have
   file: 70
 
-#  # (optional; default 0)
-#  # The minimum coverage that each package should have
-#  package: 80
-#
-#  # (optional; default 0)
-#  # The minimum total coverage project should have
-#  total: 95
+  # (optional; default 0)
+  # The minimum coverage that each package should have
+  package: 70
+
+  # (optional; default 0)
+  # The minimum total coverage project should have
+  total: 95
 
 # Holds regexp rules which will override thresholds for matched files or packages
 override:
