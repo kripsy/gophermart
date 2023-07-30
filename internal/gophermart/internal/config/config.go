@@ -67,7 +67,7 @@ func InitConfig() *Config {
 	}
 
 	if *databaseAddress == "" {
-		*databaseAddress = "postgres://gophermart:RASKkCt3PVEU@localhost:5432/auth?sslmode=disable"
+		*databaseAddress = "postgres://gophermart:gophermartpwd@localhost:5432/gophermart?sslmode=disable"
 	}
 
 	if *accrualAddress == "" {
