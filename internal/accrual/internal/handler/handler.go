@@ -146,11 +146,6 @@ func (h *Handler) ReadOrdersHandler(store storage.Store) http.HandlerFunc {
 	return http.HandlerFunc(fn)
 }
 
-func (h *Handler) CreateGoodsHandler(w http.ResponseWriter, r *http.Request) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (h *Handler) TestHandler(w http.ResponseWriter, r *http.Request) {
 	l := logger.LoggerFromContext(h.ctx)
 	l.Debug("TestHandler")
