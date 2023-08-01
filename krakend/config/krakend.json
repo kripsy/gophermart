@@ -35,6 +35,9 @@
     },
     "endpoints": [
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/login",
             "output_encoding": "no-op",
             "method": "POST",
@@ -50,6 +53,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/login",
             "output_encoding": "no-op",
             "method": "POST",
@@ -65,6 +71,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/swagger/{level1}",
             "output_encoding": "no-op",
             "method": "GET",
@@ -80,6 +89,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/register",
             "output_encoding": "no-op",
             "method": "POST",
@@ -95,6 +107,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/register",
             "output_encoding": "no-op",
             "method": "POST",
@@ -128,6 +143,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/orders",
             "output_encoding": "no-op",
             "method": "POST",
@@ -143,6 +161,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/balance",
             "output_encoding": "no-op",
             "method": "GET",
@@ -158,6 +179,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/balance",
             "output_encoding": "no-op",
             "method": "POST",
@@ -173,6 +197,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/withdrawals",
             "output_encoding": "no-op",
             "method": "GET",
@@ -188,6 +215,9 @@
             ]
         },
         {
+            "input_headers": [
+                "Authorization"
+            ],
             "endpoint": "/api/user/balance/withdraw",
             "output_encoding": "no-op",
             "method": "POST",

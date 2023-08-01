@@ -1,8 +1,7 @@
 # Start app
 
-1. make build_docker
-2. docker-compose up
-3. Enjoy ;)
+1. docker-compose up
+2. Enjoy ;)
 
 # krakenD
 
