@@ -16,20 +16,13 @@ import (
 	"go.uber.org/zap"
 )
 
-var ch1 chan models.ResponseOrder
-var ch2 chan models.ResponseOrder
-
-func GetChan() chan models.ResponseOrder {
-	return ch2
+func InitETL(ctx context.Context, accrualAddress string, channelForRequestToAccrual chan models.ResponseOrder, channelForResponseFromAccrual chan models.ResponseOrder) {
+	go restore(ctx, channelForRequestToAccrual, channelForResponseFromAccrual, accrualAddress)
+	go registeringNewOrder(ctx, channelForRequestToAccrual, channelForResponseFromAccrual, accrualAddress)
+	go getAndStoreAccrualForOrder(ctx, channelForResponseFromAccrual, accrualAddress)
 }
 
-func InitETL(ctx context.Context, accrualAddress string) {
-	go restore(ctx, ch1, ch2, accrualAddress)
-	go registeringNewOrder(ctx, ch1, ch2, accrualAddress)
-	go getAndStoreAccrualForOrder(ctx, ch2, accrualAddress)
-}
-
-func restore(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models.ResponseOrder, accrualAddress string) {
+func restore(ctx context.Context, channelForRequestToAccrual chan models.ResponseOrder, channelForResponseFromAccrual chan models.ResponseOrder, accrualAddress string) {
 	l := logger.LoggerFromContext(ctx)
 	l.Info("restore")
 	getStorage := storage.GetStorage()
@@ -44,20 +37,23 @@ func restore(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models
 	}
 
 	for _, order := range newOrders {
-		ch1 <- order
+		channelForRequestToAccrual <- order
 	}
 
 	for _, order := range processingOrders {
-		ch2 <- order
+		channelForResponseFromAccrual <- order
 	}
 }
 
-func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2 chan models.ResponseOrder, accrualAddress string) {
+func registeringNewOrder(ctx context.Context, channelForRequestToAccrual chan models.ResponseOrder, channelForResponseFromAccrual chan models.ResponseOrder, accrualAddress string) {
 	l := logger.LoggerFromContext(ctx)
 	l.Info("registeringNewOrder")
 	getStorage := storage.GetStorage()
 	for {
-		order := <-ch1
+		l.Info("Waiting from the channelForRequestToAccrual")
+		order := <-channelForRequestToAccrual
+		l.Info("Received from the channelForRequestToAccrual")
+
 		u, err := url.Parse(accrualAddress + "/api/orders")
 		if err != nil {
 			l.Error("ERROR Can't parse url.", zap.String("msg", err.Error()))
@@ -73,9 +69,13 @@ func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2
 
 		if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusConflict {
 			order, _ := getStorage.UpdateStatusOrder(ctx, order.Number, models.StatusProcessing, 0)
-			ch2 <- order
+			l.Info("Trying to send to the channelForResponseFromAccrual")
+			channelForResponseFromAccrual <- order
+			l.Info("Sent to the channelForResponseFromAccrual")
 		} else {
-			ch1 <- order
+			l.Info("Trying to send to the channelForRequestToAccrual")
+			channelForRequestToAccrual <- order
+			l.Info("Sent to the channelForRequestToAccrual")
 
 		}
 		err = resp.Body.Close()
@@ -85,12 +85,14 @@ func registeringNewOrder(ctx context.Context, ch1 chan models.ResponseOrder, ch2
 	}
 }
 
-func getAndStoreAccrualForOrder(ctx context.Context, ch2 chan models.ResponseOrder, accrualAddress string) {
+func getAndStoreAccrualForOrder(ctx context.Context, channelForResponseFromAccrual chan models.ResponseOrder, accrualAddress string) {
 	l := logger.LoggerFromContext(ctx)
 	l.Info("getAndStoreAccrualForOrder")
 	getStorage := storage.GetStorage()
 	for {
-		order := <-ch2
+		l.Info("Waiting from the channelForResponseFromAccrual")
+		order := <-channelForResponseFromAccrual
+		l.Info("Received from the channelForResponseFromAccrual")
 		u, err := url.Parse(fmt.Sprintf(accrualAddress+"/api/orders/%s", order.Number))
 		if err != nil {
 			log.Fatal(err)
@@ -118,9 +120,6 @@ func getAndStoreAccrualForOrder(ctx context.Context, ch2 chan models.ResponseOrd
 			if err != nil {
 				return
 			}
-			//ch2 <- order
-			//} else {
-			//	ch1 <- order
 		}
 		err = resp.Body.Close()
 		if err != nil {

@@ -7,6 +7,7 @@ import (
 	"github.com/kripsy/gophermart/internal/gophermart/internal/db"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/etl"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
+	"github.com/kripsy/gophermart/internal/gophermart/internal/models"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/server"
 	"go.uber.org/zap"
 )
@@ -32,6 +33,9 @@ func (a *Application) GetAppConfig() (string, string, string) {
 func NewApp(ctx context.Context) (*Application, error) {
 	cfg := config.InitConfig()
 
+	channelForRequestToAccrual := make(chan models.ResponseOrder)
+	channelForResponseFromAccrual := make(chan models.ResponseOrder)
+
 	l, err := logger.InitLogger(cfg.LoggerLevel)
 	ctx = logger.ContextWithLogger(ctx, l)
 	if err != nil {
@@ -44,12 +48,12 @@ func NewApp(ctx context.Context) (*Application, error) {
 		return nil, err
 	}
 
-	srv, err := server.InitServer(ctx, cfg.PublicKey)
+	srv, err := server.InitServer(ctx, cfg.PublicKey, channelForRequestToAccrual)
 	if err != nil {
 		return nil, err
 	}
 
-	etl.InitETL(ctx, cfg.AccrualAddress)
+	etl.InitETL(ctx, cfg.AccrualAddress, channelForRequestToAccrual, channelForResponseFromAccrual)
 
 	return &Application{
 		appConfig:  cfg,

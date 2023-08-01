@@ -23,6 +23,7 @@ services:
       restart: always
       environment:
         - RUN_ADDRESS=gophermarket_accrual:8080
+        - ACCRUAL_SYSTEM_ADDRESS=gophermarket_accrual:8080
         - DATABASE_URI=postgres://accrual:accrualpwd@gophermarket_postgres_db:5432/accrual?sslmode=disable
         - LOGGER_LEVEL=Debug
         - MIGRATIONS_PATH_AUTH=./db/accrual/migrations
