@@ -127,6 +127,9 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 		//	expectedContentType: "",
 		//},
 	}
+
+	channelForRequestToAccrual := make(chan models.ResponseOrder)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rw := httptest.NewRecorder()
@@ -134,7 +137,7 @@ func TestHandlerCreateOrderHandler(t *testing.T) {
 
 			c.Set(req, "username", tt.username)
 
-			h.CreateOrderHandler(mockStore)(rw, req)
+			h.CreateOrderHandler(mockStore, channelForRequestToAccrual)(rw, req)
 
 			resp := rw.Result()
 
