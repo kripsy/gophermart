@@ -307,10 +307,6 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 		}
 	}(conn, ctx)
 
-	if errors.Is(err, pgx.ErrNoRows) {
-		return models.ErrNoBalance()
-	}
-
 	if err != nil {
 		l.Error("Unable to connect to database: %v\n", zap.String("msg", err.Error()))
 		return err
@@ -335,7 +331,11 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 	var UploadedAt pgtype.Timestamptz
 	var ProcessedAt pgtype.Timestamptz
 
-	err = tx.QueryRow(ctx, "update gophermart_balance set current=current-$2, withdrawn=withdrawn+$2 where current>$2 and username=$1 returning *;", userName, accrual).Scan(&ID, &UserName, &Current, &Withdrawn, &UploadedAt, &ProcessedAt)
+	err = tx.QueryRow(ctx, "update gophermart_balance set current=current-$2, withdrawn=withdrawn+$2 where current>=$2 and username=$1 returning *;", userName, accrual).Scan(&ID, &UserName, &Current, &Withdrawn, &UploadedAt, &ProcessedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return models.ErrNoBalance()
+	}
+
 	if err != nil {
 		return err
 	}
