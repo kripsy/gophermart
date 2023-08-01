@@ -8,6 +8,7 @@ services:
       restart: always
       environment:
         - RUN_ADDRESS=gophermarket_gophermart:8080
+        - ACCRUAL_SYSTEM_ADDRESS=gophermarket_accrual:8080
         - DATABASE_URI=postgres://gophermart:gophermartpwd@gophermarket_postgres_db:5432/gophermart?sslmode=disable
         - LOGGER_LEVEL=Debug
         - MIGRATIONS_PATH_AUTH=./db/gophermart/migrations
