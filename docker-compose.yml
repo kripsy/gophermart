@@ -3,6 +3,9 @@ version: '3.7'
 services:
 
   gophermarket_gophermart:
+      build:
+        context: .
+        dockerfile: ./Dockerfiles/gophermart/Dockerfile
       image: docker-gophermart
       container_name: gophermarket_gophermart
       restart: always
@@ -19,6 +22,9 @@ services:
 
 
   gophermarket_accrual:
+      build:
+        context: .
+        dockerfile: ./Dockerfiles/accrual/Dockerfile
       image: docker-accrual
       container_name: gophermarket_accrual
       restart: always
@@ -33,6 +39,9 @@ services:
 
 
   gophermarket_auth:
+    build:
+        context: .
+        dockerfile: ./Dockerfiles/auth/Dockerfile
     image: docker-auth
     container_name: gophermarket_auth
     restart: always
