@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	con "github.com/gorilla/context"
-	"github.com/kripsy/gophermart/internal/gophermart/internal/etl"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/models"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/storage"
@@ -30,7 +29,7 @@ func InitHandler(ctx context.Context, publicKey string) (*Handler, error) {
 	return h, nil
 }
 
-func (h *Handler) CreateOrderHandler(store storage.Store) http.HandlerFunc {
+func (h *Handler) CreateOrderHandler(store storage.Store, channelForRequestToAccrual chan models.ResponseOrder) http.HandlerFunc {
 
 	fn := func(rw http.ResponseWriter, r *http.Request) {
 		l := logger.LoggerFromContext(h.ctx)
@@ -85,7 +84,6 @@ func (h *Handler) CreateOrderHandler(store storage.Store) http.HandlerFunc {
 		//202 — новый номер заказа принят в обработку;
 		rw.WriteHeader(http.StatusAccepted)
 
-		ch := etl.GetChan()
 		responseOrder := models.ResponseOrder{}
 		responseOrder.ID = order.ID
 		responseOrder.Username = order.Username
@@ -94,7 +92,9 @@ func (h *Handler) CreateOrderHandler(store storage.Store) http.HandlerFunc {
 		responseOrder.Accrual = order.Accrual
 		responseOrder.UploadedAt = order.UploadedAt.Time
 		responseOrder.ProcessedAt = order.ProcessedAt.Time
-		ch <- responseOrder
+		l.Info("Trying to send to channelForRequestToAccrual")
+		channelForRequestToAccrual <- responseOrder
+		l.Info("Sent to the channelForRequestToAccrual")
 
 	}
 	return http.HandlerFunc(fn)

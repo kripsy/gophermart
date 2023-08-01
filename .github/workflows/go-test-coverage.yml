@@ -27,4 +27,4 @@ jobs:
           local-prefix: github.com/org/project
           threshold-file: 55
           threshold-package: 55
-          threshold-total: 70
+          threshold-total: 69
