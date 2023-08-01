@@ -428,6 +428,19 @@ func (s *DBStorage) UpdateStatusOrder(ctx context.Context, number string, status
 	}
 	defer conn.Close(ctx)
 
+	tx, err := conn.Begin(ctx)
+	defer func(tx pgx.Tx) {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+	}(tx)
+
+	if err != nil {
+		l.Error("failed to Begin Tx in PutWithdraw", zap.String("msg", err.Error()))
+		return models.ResponseOrder{}, err
+	}
+
 	var ID int64
 	var Username string
 	var Number string
@@ -438,6 +451,27 @@ func (s *DBStorage) UpdateStatusOrder(ctx context.Context, number string, status
 
 	err = conn.QueryRow(ctx, "update public.gophermart_order set status=$1, accrual=$2 where number=$3 returning *;", status, accrual, number).Scan(&ID, &Username, &Number, &Status, &Accrual, &UploadedAt, &ProcessedAt)
 	if err != nil {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+		return models.ResponseOrder{}, err
+	}
+	_, err = tx.Exec(ctx, "insert into gophermart_balance (username, current, withdrawn) values ($1, $2, $3) on conflict (username) do update set current=gophermart_balance.current+$2;", Username, accrual, 0)
+	if err != nil {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
+		return models.ResponseOrder{}, err
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		err := tx.Rollback(ctx)
+		if err != nil {
+			l.Error("Error tx.Rollback()", zap.String("msg", err.Error()))
+		}
 		return models.ResponseOrder{}, err
 	}
 
