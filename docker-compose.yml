@@ -71,6 +71,21 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  gophermarket_pgadmin:
+    image: dpage/pgadmin4:7.5
+    container_name: gophermarket_pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: go@go.go
+      PGADMIN_DEFAULT_PASSWORD: go
+    volumes:
+      - ./pgadmindata/servers.json:/pgadmin4/servers.json
+    depends_on:
+      - gophermarket_postgres_db
+      
     
 
   gophermarket_krakend_ce:
@@ -86,3 +101,4 @@ services:
 
 volumes:
   pg_data: {}
+  pgadmin-data: {}
