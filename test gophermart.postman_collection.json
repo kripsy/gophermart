@@ -82,6 +82,231 @@
 			"response": []
 		},
 		{
+			"name": "failed register, empty login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"  pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function clearCookie(){",
+							"    const cookieJar = pm.cookies.jar();",
+							"    const url = pm.request.url;",
+							"    var callback = function(error, cookie){",
+							"    if (error) {",
+							"            console.log(error);   ",
+							"        }else {",
+							"            console.log(cookie)",
+							"        }",
+							"    }",
+							"    cookieJar.clear(pm.request.url, 'token', callback);",
+							"}",
+							"clearCookie();",
+							"",
+							"pm.environment.set(\"url\", \"127.0.0.1:8080\");",
+							"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+							"pm.environment.set(\"password\", \"\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\":\"\",\n    \"password\":\"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/register",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "failed register, incorrect json",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"  pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function clearCookie(){",
+							"    const cookieJar = pm.cookies.jar();",
+							"    const url = pm.request.url;",
+							"    var callback = function(error, cookie){",
+							"    if (error) {",
+							"            console.log(error);   ",
+							"        }else {",
+							"            console.log(cookie)",
+							"        }",
+							"    }",
+							"    cookieJar.clear(pm.request.url, 'token', callback);",
+							"}",
+							"clearCookie();",
+							"",
+							"pm.environment.set(\"url\", \"127.0.0.1:8080\");",
+							"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+							"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"{{username}}\",\n    \"login\": \"{{username}}1\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/register",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "failed register, incorrect json 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"  pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function clearCookie(){",
+							"    const cookieJar = pm.cookies.jar();",
+							"    const url = pm.request.url;",
+							"    var callback = function(error, cookie){",
+							"    if (error) {",
+							"            console.log(error);   ",
+							"        }else {",
+							"            console.log(cookie)",
+							"        }",
+							"    }",
+							"    cookieJar.clear(pm.request.url, 'token', callback);",
+							"}",
+							"clearCookie();",
+							"",
+							"pm.environment.set(\"url\", \"127.0.0.1:8080\");",
+							"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+							"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login1\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/register",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "success register",
 			"event": [
 				{
