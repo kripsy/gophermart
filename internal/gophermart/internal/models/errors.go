@@ -31,3 +31,17 @@ func ErrNoOrder() error {
 		Err:  errors.New("no balance"),
 	}
 }
+
+type ResponseOrderDuplicateError struct {
+	Text string
+	Err  error
+}
+
+func (e *ResponseOrderDuplicateError) Error() string { return e.Text + ": " + e.Err.Error() }
+
+func ErrDuplicateOrder() error {
+	return &ResponseOrderDuplicateError{
+		Text: "the user has already used this order number",
+		Err:  errors.New("duplicate order number"),
+	}
+}
