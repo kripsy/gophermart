@@ -31,7 +31,6 @@ func restore(ctx context.Context, channelForRequestToAccrual chan models.Respons
 		l.Error("ERROR Can't get new Orders.", zap.String("msg", err.Error()))
 	}
 	processingOrders, err := getStorage.GetProcessingOrders(ctx)
-	// TODO Добавить обработку ошибок
 	if err != nil {
 		l.Error("ERROR Can't get processing Orders.", zap.String("msg", err.Error()))
 	}
@@ -64,7 +63,8 @@ func registeringNewOrder(ctx context.Context, channelForRequestToAccrual chan mo
 		r := bytes.NewReader(jsonBody)
 		resp, err := http.Post(u.String(), "application/json", r)
 		if err != nil {
-			l.Error("ERROR Can't get accrual.", zap.String("msg", err.Error()))
+			channelForRequestToAccrual <- order
+			l.Info("ERROR Can't get accrual.", zap.String("msg", err.Error()))
 		}
 
 		if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusConflict {

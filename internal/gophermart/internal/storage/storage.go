@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/config"
 	"github.com/kripsy/gophermart/internal/gophermart/internal/logger"
@@ -340,7 +341,15 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 		return err
 	}
 	_, err = tx.Exec(ctx, "INSERT INTO public.gophermart_order (username, number, status, accrual) VALUES ($1, $2, $3, $4);", userName, number, models.StatusProcessed, -accrual)
+
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" { //duplicate key value violates unique constraint "gophermart_order_number_key"
+				return models.ErrDuplicateOrder()
+			}
+		}
+
 		return err
 	}
 
@@ -382,7 +391,7 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 		return []models.ResponseOrder{}, err
 	}
 
-	var orders []models.ResponseOrder
+	orders := []models.ResponseOrder{}
 
 	for rows.Next() {
 		var ID int64

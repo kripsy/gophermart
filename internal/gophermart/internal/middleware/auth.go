@@ -21,6 +21,9 @@ func (m *Middleware) JWTMiddleware(next http.Handler) http.Handler {
 		l := logger.LoggerFromContext(m.ctx)
 		protectedURL := []string{
 			"/api/user/orders",
+			"/api/user/balance",
+			"/api/user/balance/withdraw",
+			"/api/user/withdrawals",
 		}
 		l.Debug("Start JWTMiddleware")
 

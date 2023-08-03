@@ -206,9 +206,17 @@ func (h *Handler) CreateWithdrawHandler(store storage.Store) http.HandlerFunc {
 
 		err = store.PutWithdraw(h.ctx, username, number, req.Accrual)
 
+		//422 — неверный номер заказа;
+		var errResponseOrderDuplicate *models.ResponseOrderDuplicateError
+		if errors.As(err, &errResponseOrderDuplicate) {
+			l.Error("ERROR invalid order number format.")
+			rw.WriteHeader(http.StatusUnprocessableEntity)
+			return
+		}
+
 		//402 — на счету недостаточно средств;
-		var e *models.ResponseBalanceError
-		if errors.As(err, &e) {
+		var errResponseBalance *models.ResponseBalanceError
+		if errors.As(err, &errResponseBalance) {
 			l.Error("ERROR there are not enough funds in the account.", zap.String("msg", err.Error()))
 			rw.WriteHeader(http.StatusPaymentRequired)
 			return
