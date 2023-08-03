@@ -197,7 +197,7 @@ func (h *Handler) CreateWithdrawHandler(store storage.Store) http.HandlerFunc {
 			return
 		}
 
-		//422 — неверный номер заказа;
+		//422 — неверный формат номера заказа;
 		if !utils.LuhnValid(number) {
 			l.Error("ERROR invalid order number format.")
 			rw.WriteHeader(http.StatusUnprocessableEntity)

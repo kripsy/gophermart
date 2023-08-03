@@ -31,7 +31,6 @@ func restore(ctx context.Context, channelForRequestToAccrual chan models.Respons
 		l.Error("ERROR Can't get new Orders.", zap.String("msg", err.Error()))
 	}
 	processingOrders, err := getStorage.GetProcessingOrders(ctx)
-	// TODO Добавить обработку ошибок
 	if err != nil {
 		l.Error("ERROR Can't get processing Orders.", zap.String("msg", err.Error()))
 	}
