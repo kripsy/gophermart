@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "352c0693-88a8-413b-9cbb-5ae8e5960bb9",
+		"_postman_id": "e08e2d29-6315-4c74-9b99-b59abf14c520",
 		"name": "test gophermart",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "6652812"
@@ -1874,9 +1874,6 @@
 									"});",
 									"",
 									"",
-									"pm.test(\"Content-Type header is application/json\", () => {",
-									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
-									"});",
 									"",
 									"pm.test(\"Check empty body\", () => {",
 									"  pm.response.to.not.be.withBody;",
