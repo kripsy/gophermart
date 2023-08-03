@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "aca19a36-6e26-49c7-991c-e66b8d3c746f",
+		"_postman_id": "21dbca38-61e5-4c2c-ba9d-428af25c75ac",
 		"name": "test gophermart",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "6652812"
@@ -621,6 +621,513 @@
 						"api",
 						"user",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "success upload order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const cookieJar = pm.cookies.jar();",
+							"// const url = pm.request.url;",
+							"// var callback = function(error, cookie){",
+							"// if (error) {",
+							"//         console.log(error);   ",
+							"//     }else {",
+							"//         console.log(cookie)",
+							"//     }",
+							"// }",
+							"// cookieJar.clear(pm.request.url, 'token', callback);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwODgxODQsIlVzZXJJRCI6NywiVXNlcm5hbWUiOiJEZW5hIn0.Gh-ifqgjRwsf__oDYcbO31k1t38TF07djPpmTH_AZN95UoxpQpyo_0xFBBrLvLSqJMsqv0CmrRW89CxQTi2sazkkTYDdF1p3Ttbn4jMM8pSJLhVIsR85XVa4oCBAIXokfTtpRMw1ci1g8rMQdyF4ZOdTM4iImcxuN0yHGSJYdGTF_MkD2hUaZf_AZwFYilGnPnhkhNQZbR99aOwjBpbB2_mj9kj61-IrRO9g8oJjG_BnfFGBpqW4qeEG_6GlVrbzigRBZVmMivku-UHf4-icstM92d453N0Y7XPYQlFqYDXNOkuWu35fFvIO5ffr8sAEeJ4ZsbqFnZDqDlfQn8bmNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "9253017637",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/orders",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload duplicate from this user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const cookieJar = pm.cookies.jar();",
+							"// const url = pm.request.url;",
+							"// var callback = function(error, cookie){",
+							"// if (error) {",
+							"//         console.log(error);   ",
+							"//     }else {",
+							"//         console.log(cookie)",
+							"//     }",
+							"// }",
+							"// cookieJar.clear(pm.request.url, 'token', callback);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwODgxODQsIlVzZXJJRCI6NywiVXNlcm5hbWUiOiJEZW5hIn0.Gh-ifqgjRwsf__oDYcbO31k1t38TF07djPpmTH_AZN95UoxpQpyo_0xFBBrLvLSqJMsqv0CmrRW89CxQTi2sazkkTYDdF1p3Ttbn4jMM8pSJLhVIsR85XVa4oCBAIXokfTtpRMw1ci1g8rMQdyF4ZOdTM4iImcxuN0yHGSJYdGTF_MkD2hUaZf_AZwFYilGnPnhkhNQZbR99aOwjBpbB2_mj9kj61-IrRO9g8oJjG_BnfFGBpqW4qeEG_6GlVrbzigRBZVmMivku-UHf4-icstM92d453N0Y7XPYQlFqYDXNOkuWu35fFvIO5ffr8sAEeJ4ZsbqFnZDqDlfQn8bmNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "9253017637",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/orders",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload duplicate from this user bad req",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const cookieJar = pm.cookies.jar();",
+							"// const url = pm.request.url;",
+							"// var callback = function(error, cookie){",
+							"// if (error) {",
+							"//         console.log(error);   ",
+							"//     }else {",
+							"//         console.log(cookie)",
+							"//     }",
+							"// }",
+							"// cookieJar.clear(pm.request.url, 'token', callback);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwODgxODQsIlVzZXJJRCI6NywiVXNlcm5hbWUiOiJEZW5hIn0.Gh-ifqgjRwsf__oDYcbO31k1t38TF07djPpmTH_AZN95UoxpQpyo_0xFBBrLvLSqJMsqv0CmrRW89CxQTi2sazkkTYDdF1p3Ttbn4jMM8pSJLhVIsR85XVa4oCBAIXokfTtpRMw1ci1g8rMQdyF4ZOdTM4iImcxuN0yHGSJYdGTF_MkD2hUaZf_AZwFYilGnPnhkhNQZbR99aOwjBpbB2_mj9kj61-IrRO9g8oJjG_BnfFGBpqW4qeEG_6GlVrbzigRBZVmMivku-UHf4-icstM92d453N0Y7XPYQlFqYDXNOkuWu35fFvIO5ffr8sAEeJ4ZsbqFnZDqDlfQn8bmNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[]asdasd]",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/orders",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "api/user/balance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const cookieJar = pm.cookies.jar();",
+							"// const url = pm.request.url;",
+							"// var callback = function(error, cookie){",
+							"// if (error) {",
+							"//         console.log(error);   ",
+							"//     }else {",
+							"//         console.log(cookie)",
+							"//     }",
+							"// }",
+							"// cookieJar.clear(pm.request.url, 'token', callback);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwODgxODQsIlVzZXJJRCI6NywiVXNlcm5hbWUiOiJEZW5hIn0.Gh-ifqgjRwsf__oDYcbO31k1t38TF07djPpmTH_AZN95UoxpQpyo_0xFBBrLvLSqJMsqv0CmrRW89CxQTi2sazkkTYDdF1p3Ttbn4jMM8pSJLhVIsR85XVa4oCBAIXokfTtpRMw1ci1g8rMQdyF4ZOdTM4iImcxuN0yHGSJYdGTF_MkD2hUaZf_AZwFYilGnPnhkhNQZbR99aOwjBpbB2_mj9kj61-IrRO9g8oJjG_BnfFGBpqW4qeEG_6GlVrbzigRBZVmMivku-UHf4-icstM92d453N0Y7XPYQlFqYDXNOkuWu35fFvIO5ffr8sAEeJ4ZsbqFnZDqDlfQn8bmNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[]asdasd]",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/balance",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "api/user/balance without balance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const cookieJar = pm.cookies.jar();",
+							"// const url = pm.request.url;",
+							"// var callback = function(error, cookie){",
+							"// if (error) {",
+							"//         console.log(error);   ",
+							"//     }else {",
+							"//         console.log(cookie)",
+							"//     }",
+							"// }",
+							"// cookieJar.clear(pm.request.url, 'token', callback);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwODgxODQsIlVzZXJJRCI6NywiVXNlcm5hbWUiOiJEZW5hIn0.Gh-ifqgjRwsf__oDYcbO31k1t38TF07djPpmTH_AZN95UoxpQpyo_0xFBBrLvLSqJMsqv0CmrRW89CxQTi2sazkkTYDdF1p3Ttbn4jMM8pSJLhVIsR85XVa4oCBAIXokfTtpRMw1ci1g8rMQdyF4ZOdTM4iImcxuN0yHGSJYdGTF_MkD2hUaZf_AZwFYilGnPnhkhNQZbR99aOwjBpbB2_mj9kj61-IrRO9g8oJjG_BnfFGBpqW4qeEG_6GlVrbzigRBZVmMivku-UHf4-icstM92d453N0Y7XPYQlFqYDXNOkuWu35fFvIO5ffr8sAEeJ4ZsbqFnZDqDlfQn8bmNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[]asdasd]",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/balance",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "api/user/balance/withdraw",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const cookieJar = pm.cookies.jar();",
+							"// const url = pm.request.url;",
+							"// var callback = function(error, cookie){",
+							"// if (error) {",
+							"//         console.log(error);   ",
+							"//     }else {",
+							"//         console.log(cookie)",
+							"//     }",
+							"// }",
+							"// cookieJar.clear(pm.request.url, 'token', callback);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwODgxODQsIlVzZXJJRCI6NywiVXNlcm5hbWUiOiJEZW5hIn0.Gh-ifqgjRwsf__oDYcbO31k1t38TF07djPpmTH_AZN95UoxpQpyo_0xFBBrLvLSqJMsqv0CmrRW89CxQTi2sazkkTYDdF1p3Ttbn4jMM8pSJLhVIsR85XVa4oCBAIXokfTtpRMw1ci1g8rMQdyF4ZOdTM4iImcxuN0yHGSJYdGTF_MkD2hUaZf_AZwFYilGnPnhkhNQZbR99aOwjBpbB2_mj9kj61-IrRO9g8oJjG_BnfFGBpqW4qeEG_6GlVrbzigRBZVmMivku-UHf4-icstM92d453N0Y7XPYQlFqYDXNOkuWu35fFvIO5ffr8sAEeJ4ZsbqFnZDqDlfQn8bmNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order\": \"2377225624\",\n    \"sum\": 75\n} ",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/balance/withdraw",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"balance",
+						"withdraw"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "api/user/balance/withdraw Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// const cookieJar = pm.cookies.jar();",
+							"// const url = pm.request.url;",
+							"// var callback = function(error, cookie){",
+							"// if (error) {",
+							"//         console.log(error);   ",
+							"//     }else {",
+							"//         console.log(cookie)",
+							"//     }",
+							"// }",
+							"// cookieJar.clear(pm.request.url, 'token', callback);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwODgxODQsIlVzZXJJRCI6NywiVXNlcm5hbWUiOiJEZW5hIn0.Gh-ifqgjRwsf__oDYcbO31k1t38TF07djPpmTH_AZN95UoxpQpyo_0xFBBrLvLSqJMsqv0CmrRW89CxQTi2sazkkTYDdF1p3Ttbn4jMM8pSJLhVIsR85XVa4oCBAIXokfTtpRMw1ci1g8rMQdyF4ZOdTM4iImcxuN0yHGSJYdGTF_MkD2hUaZf_AZwFYilGnPnhkhNQZbR99aOwjBpbB2_mj9kj61-IrRO9g8oJjG_BnfFGBpqW4qeEG_6GlVrbzigRBZVmMivku-UHf4-icstM92d453N0Y7XPYQlFqYDXNOkuWu35fFvIO5ffr8sAEeJ4ZsbqFnZDqDlfQn8bmNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order\": \"2377225624\",\n    \"sum\": 75\n} ",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/user/withdrawals",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"withdrawals"
 					]
 				}
 			},
