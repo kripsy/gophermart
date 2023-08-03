@@ -459,12 +459,12 @@ func TestHandlerReadWithdrawsHandler(t *testing.T) {
 	nowTime := time.Date(2021, 8, 15, 14, 30, 45, 100, time.UTC)
 	//zeroTime := time.Time{}
 
-	var withdraws []models.ResponseOrder
-	withdraw := models.ResponseOrder{ID: 1, Username: "username2", Number: "10", Status: "PROCESSED", Accrual: 50, UploadedAt: nowTime, ProcessedAt: nowTime}
+	var withdraws []models.ResponseWithdrawals
+	withdraw := models.ResponseWithdrawals{ID: 1, Username: "username2", Number: "10", Status: "PROCESSED", Accrual: 50, UploadedAt: nowTime, ProcessedAt: nowTime}
 
 	withdraws = append(withdraws, withdraw)
 
-	mockStore.EXPECT().GetWithdraws(h.ctx, "username1").Return([]models.ResponseOrder{}, errors.New("Error for test")).AnyTimes()
+	mockStore.EXPECT().GetWithdraws(h.ctx, "username1").Return([]models.ResponseWithdrawals{}, errors.New("Error for test")).AnyTimes()
 	mockStore.EXPECT().GetWithdraws(h.ctx, "username2").Return(withdraws, nil).AnyTimes()
 
 	tests := []struct {
@@ -478,12 +478,12 @@ func TestHandlerReadWithdrawsHandler(t *testing.T) {
 		expectedContentType string
 	}{
 		{
-			name:                "CreateWithdrawHandler 500 InternalServerError",
+			name:                "CreateWithdrawHandler 204",
 			method:              http.MethodGet,
 			url:                 "http://127.0.0.1:8080/api/user/withdraws",
 			body:                nil,
 			username:            "username1",
-			expectedCode:        http.StatusInternalServerError,
+			expectedCode:        http.StatusNoContent,
 			expectedBody:        "",
 			expectedContentType: "",
 		},
@@ -494,7 +494,7 @@ func TestHandlerReadWithdrawsHandler(t *testing.T) {
 			body:                nil,
 			username:            "username2",
 			expectedCode:        http.StatusOK,
-			expectedBody:        "[{\"order\":\"10\",\"status\":\"PROCESSED\",\"accrual\":50,\"uploaded_at\":\"2021-08-15T14:30:45.0000001Z\"}]\n",
+			expectedBody:        "[{\"order\":\"10\",\"sum\":50,\"processed_at\":\"2021-08-15T14:30:45.0000001Z\"}]\n",
 			expectedContentType: "application/json",
 		},
 	}
