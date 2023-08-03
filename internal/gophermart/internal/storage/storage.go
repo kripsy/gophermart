@@ -382,7 +382,7 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 		return []models.ResponseOrder{}, err
 	}
 
-	var orders []models.ResponseOrder
+	orders := []models.ResponseOrder{}
 
 	for rows.Next() {
 		var ID int64
