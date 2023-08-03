@@ -242,6 +242,7 @@ func (h *Handler) ReadWithdrawsHandler(store storage.Store) http.HandlerFunc {
 
 		rw.Header().Set("Content-Type", "application/json")
 
+		//204 — нет ни одного списания.
 		if len(withdraws) == 0 {
 			l.Info("ERROR the order is not registered in the payment system.")
 			rw.WriteHeader(http.StatusNoContent)
