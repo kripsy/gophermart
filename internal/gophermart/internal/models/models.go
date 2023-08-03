@@ -26,6 +26,16 @@ type ResponseOrder struct {
 	ProcessedAt time.Time `json:"-"`
 }
 
+type ResponseWithdrawals struct {
+	ID          int64     `json:"-"`
+	Username    string    `json:"-"`
+	Number      string    `json:"order"`
+	Status      string    `json:"-"`
+	Accrual     int       `json:"sum,omitempty"`
+	UploadedAt  time.Time `json:"-"`
+	ProcessedAt time.Time `json:"processed_at"`
+}
+
 type ResponseBalance struct {
 	ID          int64     `json:"-"`
 	Username    string    `json:"-"`

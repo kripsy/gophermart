@@ -96,10 +96,10 @@ func (mr *MockStoreMockRecorder) GetProcessingOrders(ctx interface{}) *gomock.Ca
 }
 
 // GetWithdraws mocks base method.
-func (m *MockStore) GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseOrder, error) {
+func (m *MockStore) GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseWithdrawals, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetWithdraws", ctx, userName)
-	ret0, _ := ret[0].([]models.ResponseOrder)
+	ret0, _ := ret[0].([]models.ResponseWithdrawals)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

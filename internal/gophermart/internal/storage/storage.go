@@ -23,7 +23,7 @@ type Store interface {
 	GetNewOrders(ctx context.Context) ([]models.ResponseOrder, error)
 	GetBalance(ctx context.Context, userName interface{}) (models.ResponseBalance, error)
 	PutWithdraw(ctx context.Context, userName interface{}, number int64, accrual int) error
-	GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseOrder, error)
+	GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseWithdrawals, error)
 	UpdateStatusOrder(ctx context.Context, number string, status string, accrual int) (models.ResponseOrder, error)
 }
 
@@ -361,7 +361,7 @@ func (s *DBStorage) PutWithdraw(ctx context.Context, userName interface{}, numbe
 	return err
 }
 
-func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseOrder, error) {
+func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]models.ResponseWithdrawals, error) {
 
 	l := logger.LoggerFromContext(ctx)
 	l.Info("PutOrder")
@@ -376,7 +376,7 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 	}(conn, ctx)
 	if err != nil {
 		l.Error("Unable to connect to database: ", zap.String("msg", err.Error()))
-		return []models.ResponseOrder{}, err
+		return []models.ResponseWithdrawals{}, err
 	}
 
 	rows, err := conn.Query(ctx, "select * from public.gophermart_order where username=$1 and accrual < 0 order by uploaded_at;", userName)
@@ -384,14 +384,14 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 	//defer rows.Close() //nolint:all
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return []models.ResponseOrder{}, models.ErrNoOrder()
+		return []models.ResponseWithdrawals{}, models.ErrNoOrder()
 	}
 
 	if err != nil {
-		return []models.ResponseOrder{}, err
+		return []models.ResponseWithdrawals{}, err
 	}
 
-	orders := []models.ResponseOrder{}
+	orders := []models.ResponseWithdrawals{}
 
 	for rows.Next() {
 		var ID int64
@@ -406,7 +406,7 @@ func (s *DBStorage) GetWithdraws(ctx context.Context, userName interface{}) ([]m
 			return nil, err
 		}
 
-		order := models.ResponseOrder{}
+		order := models.ResponseWithdrawals{}
 
 		order.ID = ID
 		order.Username = Username

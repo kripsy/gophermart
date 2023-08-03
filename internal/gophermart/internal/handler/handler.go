@@ -148,14 +148,9 @@ func (h *Handler) ReadUserBalanceHandler(store storage.Store) http.HandlerFunc {
 
 		// 204 — заказ не зарегистрирован в системе расчёта.
 		var e *models.ResponseBalanceError
-		if errors.As(err, &e) {
-			l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
-			rw.WriteHeader(http.StatusNoContent)
-			return
-		}
 
 		//500 — внутренняя ошибка сервера.
-		if err != nil {
+		if err != nil && !errors.As(err, &e) {
 			l.Error("ERROR DB.", zap.String("msg", err.Error()))
 			rw.WriteHeader(http.StatusInternalServerError)
 			return
@@ -251,17 +246,19 @@ func (h *Handler) ReadWithdrawsHandler(store storage.Store) http.HandlerFunc {
 		if len(withdraws) == 0 {
 			l.Info("ERROR the order is not registered in the payment system.")
 			rw.WriteHeader(http.StatusNoContent)
+			return
 		}
 
 		//204 — нет ни одного списания.
 		var e *models.ResponseBalanceError
 		if errors.As(err, &e) {
-			l.Error("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
+			l.Info("ERROR the order is not registered in the payment system.", zap.String("msg", err.Error()))
 			rw.WriteHeader(http.StatusNoContent)
+			return
 		}
 
 		//500 — внутренняя ошибка сервера.
-		if err != nil {
+		if err != nil && !errors.As(err, &e) {
 			l.Error("ERROR DB.", zap.String("msg", err.Error()))
 			rw.WriteHeader(http.StatusInternalServerError)
 			return
@@ -273,7 +270,6 @@ func (h *Handler) ReadWithdrawsHandler(store storage.Store) http.HandlerFunc {
 			l.Error("ERROR encoding response.", zap.String("msg", err.Error()))
 			return
 		}
-
 		rw.WriteHeader(http.StatusOK)
 	}
 	return http.HandlerFunc(fn)
