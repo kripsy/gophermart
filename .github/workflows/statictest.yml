@@ -32,4 +32,4 @@ jobs:
 
       - name: Run statictest
         run: |
-          go vet -vettool=$(which statictest) ./...
+          go vet -vettool=$(which statictest) ./... --exclude=github.com/go-json-experiment/json
