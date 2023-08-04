@@ -31,6 +31,5 @@ jobs:
           mv $GITHUB_WORKSPACE/.tools/statictest /usr/local/bin/statictest
 
       - name: Run statictest
-        continue-on-error: true
         run: |
-          go vet -vettool=$(which statictest) ./... --exclude=github.com/go-json-experiment/json
+          go list ./... | grep -v "github.com/go-json-experiment/json" | xargs -L1 go vet -vettool=$(which statictest) ./...
