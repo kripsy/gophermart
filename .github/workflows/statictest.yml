@@ -32,4 +32,4 @@ jobs:
 
       - name: Run statictest
         run: |
-          go list ./... | grep -v "github.com/go-json-experiment/json" | xargs -L1 go vet -vettool=$(which statictest) ./...
+          go list ./... | grep -v "github.com/go-json-experiment/json" | xargs -L1 go vet -vettool=$(which statictest)
