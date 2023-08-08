@@ -1,26 +1,104 @@
 version: '3.7'
 
 services:
-  postgres_db:
+
+  gophermarket_gophermart:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/gophermart/Dockerfile
+    image: docker-gophermart
+    container_name: gophermarket_gophermart
+    restart: always
+    environment:
+      - RUN_ADDRESS=gophermarket_gophermart:8080
+      - ACCRUAL_SYSTEM_ADDRESS=http://gophermarket_accrual:8080
+      - DATABASE_URI=postgres://gophermart:gophermartpwd@gophermarket_postgres_db:5432/gophermart?sslmode=disable
+      - LOGGER_LEVEL=Debug
+      - MIGRATIONS_PATH_AUTH=./db/gophermart/migrations
+    depends_on:
+      - gophermarket_postgres_db
+      - gophermarket_krakend_ce
+      - gophermarket_accrual
+
+
+  gophermarket_accrual:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/accrual/Dockerfile
+    image: docker-accrual
+    container_name: gophermarket_accrual
+    restart: always
+    environment:
+      - RUN_ADDRESS=gophermarket_accrual:8080
+      - DATABASE_URI=postgres://accrual:accrualpwd@gophermarket_postgres_db:5432/accrual?sslmode=disable
+      - LOGGER_LEVEL=Debug
+      - MIGRATIONS_PATH_AUTH=./db/accrual/migrations
+    depends_on:
+      - gophermarket_postgres_db
+      - gophermarket_krakend_ce
+
+
+  gophermarket_auth:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/auth/Dockerfile
+    image: docker-auth
+    container_name: gophermarket_auth
+    restart: always
+    environment:
+      - RUN_ADDRESS=gophermarket_auth:8080
+      - DATABASE_URI=postgres://auth:authpwd@gophermarket_postgres_db:5432/auth?sslmode=disable
+      - LOGGER_LEVEL=Debug
+      - MIGRATIONS_PATH_AUTH=./db/auth/migrations
+    depends_on:
+      - gophermarket_postgres_db
+      - gophermarket_krakend_ce
+      - gophermarket_accrual
+      - gophermarket_gophermart
+
+
+  gophermarket_postgres_db:
     image: postgres:15.3
+    container_name: gophermarket_postgres_db
     restart: always
     environment:
       - POSTGRES_PASSWORD=RASKkCt3PVEU
-      - POSTGRES_USER=gophermart
-      - POSTGRES_DB=gophermart
+      - POSTGRES_USER=seed
+      - POSTGRES_DB=seed
       - PGDATA=/var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
     volumes:
-      - pg_data:/var/lib/postgresql/data  
+      - pg_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  krakend_ce:
+  gophermarket_pgadmin:
+    image: dpage/pgadmin4:7.5
+    container_name: gophermarket_pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: go@go.go
+      PGADMIN_DEFAULT_PASSWORD: go
+    volumes:
+      - ./pgadmindata/servers.json:/pgadmin4/servers.json
+    depends_on:
+      - gophermarket_postgres_db
+
+
+
+  gophermarket_krakend_ce:
     image: devopsfaith/krakend:latest
+    container_name: gophermarket_krakend_ce
+    restart: always
     volumes:
       - ./krakend/config:/etc/krakend
     ports:
       - "8080:8080"
-    command: ["run", "-d", "-c", "/etc/krakend/krakend.json"]
+    command: [ "run", "-d", "-c", "/etc/krakend/krakend.json" ]
+
 
 volumes:
-  pg_data: {}
+  pg_data: { }
+  pgadmin-data: { }

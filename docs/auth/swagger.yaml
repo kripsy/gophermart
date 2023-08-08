@@ -1,0 +1,72 @@
+basePath: /
+definitions:
+  models.User:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact: {}
+  description: This is a swagger server for Gophermart Auth server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Swagger API Gophermart
+  version: "1.0"
+paths:
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Login as user
+      parameters:
+      - description: User login data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Login
+      tags:
+      - user
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Register new user
+      parameters:
+      - description: User register data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Register
+      tags:
+      - user
+swagger: "2.0"

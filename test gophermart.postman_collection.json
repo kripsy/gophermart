@@ -1,0 +1,2888 @@
+{
+	"info": {
+		"_postman_id": "e08e2d29-6315-4c74-9b99-b59abf14c520",
+		"name": "test gophermart",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6652812"
+	},
+	"item": [
+		{
+			"name": "/api/user/register",
+			"item": [
+				{
+					"name": "/api/user/register - 400 (empty password)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"  pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.environment.set(\"url\", \"127.0.0.1:8080\");",
+									"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+									"pm.environment.set(\"password\", \"\");",
+									"pm.environment.set(\"tokenUser1\", \"\");",
+									"pm.environment.set(\"tokenUser2\", \"\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/register",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/register - 400 (empty login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"  pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.environment.set(\"url\", \"127.0.0.1:8080\");",
+									"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+									"pm.environment.set(\"password\", \"\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/register",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/register - 400 (incorrect json)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"  pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.environment.set(\"url\", \"127.0.0.1:8080\");",
+									"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+									"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"{{username}}\",\n    \"login\": \"{{username}}1\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/register",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/register - 400 (incorrect json 2)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"  pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.environment.set(\"url\", \"127.0.0.1:8080\");",
+									"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+									"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login1\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/register",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/register - 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"pm.test(\"Cookie token is present\", () => {",
+									"  pm.expect(pm.cookies.has('token')).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Authorization header is present\", () => {",
+									"  pm.response.to.have.header(\"Authorization\");",
+									"});",
+									"pm.environment.set(\"tokenUser1\", pm.response.headers.get(\"Authorization\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+									"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/register",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/register - 409 (duplicate login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {",
+									"  pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const cookieJar = pm.cookies.jar();",
+									"const url = pm.request.url;",
+									"var callback = function(error, cookie){",
+									"if (error) {",
+									"        console.log(error);   ",
+									"    }else {",
+									"        console.log(cookie)",
+									"    }",
+									"}",
+									"cookieJar.clear(pm.request.url, 'token', callback);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/register",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/register - 200 (user 2)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"pm.test(\"Cookie token is present\", () => {",
+									"  pm.expect(pm.cookies.has('token')).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Authorization header is present\", () => {",
+									"  pm.response.to.have.header(\"Authorization\");",
+									"});",
+									"pm.environment.set(\"tokenUser2\", pm.response.headers.get(\"Authorization\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\",",
+									"});",
+									"pm.environment.set(\"username2\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+									"pm.environment.set(\"password2\", pm.variables.replaceIn('{{$randomPassword}}'));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username2}}\",\n    \"password\":\"{{password2}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/register",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/user/login",
+			"item": [
+				{
+					"name": "/api/user/login - 401 (incorrect login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Authorization header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Authorization\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}l\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/login",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/login - 401 (incorrect pwd)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Authorization header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Authorization\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}\",\n    \"password\":\"{{password}}s\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/login",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/login - 400 (incorrect json)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Authorization header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Authorization\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}\",\n    \"password\":\"{{password}}\",\n    \"I WANNA\":\"CRY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/login",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/login - 400 (incorrect json 2)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Authorization header is not present\", () => {",
+									"    pm.response.to.not.have.header(\"Authorization\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function clearCookie(){",
+									"    const cookieJar = pm.cookies.jar();",
+									"    const url = pm.request.url;",
+									"    var callback = function(error, cookie){",
+									"    if (error) {",
+									"            console.log(error);   ",
+									"        }else {",
+									"            console.log(cookie)",
+									"        }",
+									"    }",
+									"    cookieJar.clear(pm.request.url, 'token', callback);",
+									"}",
+									"clearCookie();",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}\",\n    \"password\":\"{{password}}\",\n    \"login\":\"{{username}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/login",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/login - 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Authorization header is present\", () => {",
+									"    pm.response.to.have.header(\"Authorization\");",
+									"});",
+									"pm.environment.set(\"tokenUser1\", pm.response.headers.get(\"Authorization\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const cookieJar = pm.cookies.jar();",
+									"const url = pm.request.url;",
+									"var callback = function(error, cookie){",
+									"if (error) {",
+									"        console.log(error);   ",
+									"    }else {",
+									"        console.log(cookie)",
+									"    }",
+									"}",
+									"cookieJar.clear(pm.request.url, 'token', callback);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\":\"{{username}}\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/login",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/user/orders POST",
+			"item": [
+				{
+					"name": "/api/user/orders - 202 (success order by user 1)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomValidOrder\", random(12));",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{randomValidOrder}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/orders - 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\",",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{randomValidOrder}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/orders - 200 (duplicate order by user 1)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{randomValidOrder}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/orders - 422 (incorrect number)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomInvalidOrder\", random(12)+1);",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{randomInvalidOrder}}12",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/orders - 409 (user 2 try upload order user 1)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser2\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{randomValidOrder}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/orders - 400 (bad req)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "123123123qsdasd",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/user/orders GET",
+			"item": [
+				{
+					"name": "/api/user/orders - 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"pm.test(\"Check json response\", () => {",
+									"  const responseJson = pm.response.json();",
+									"  pm.expect(responseJson).to.be.an(\"array\");",
+									"  pm.expect(responseJson[0].order).to.be.an(\"string\");",
+									"  pm.expect(responseJson[0].status).to.be.an(\"string\");",
+									"  if (responseJson[0].accrual !== undefined){",
+									"pm.expect(responseJson[0].accrual).to.be.an(\"number\");",
+									"  }",
+									"  pm.expect(responseJson[0].uploaded_at).to.be.an(\"string\");",
+									"  ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "123123123qsdasd",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/orders - 204",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser2\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/user/orders - 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\",",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/orders",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/user/balance",
+			"item": [
+				{
+					"name": "api/user/balance - 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"pm.test(\"Content-Length exist\", () => {",
+									"  pm.response.to.have.header(\"Content-Length\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Check json response\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    if (pm.response.code === 200) {",
+									"        const responseJson = pm.response.json();",
+									"        if (responseJson.current !== undefined) {",
+									"            pm.expect(responseJson.current).to.be.an(\"number\");",
+									"        }",
+									"        if (responseJson.withdrawn !== undefined) {",
+									"            pm.expect(responseJson.withdrawn).to.be.an(\"number\");",
+									"        }",
+									"    }",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/balance",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/user/balance - 200 (user 2, empty balance)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"",
+									"pm.test(\"Content-Length exist\", () => {",
+									"  pm.response.to.have.header(\"Content-Length\");",
+									"});",
+									"",
+									"pm.test(\"Check json response\", () => {",
+									"    if (pm.response.code === 200) {",
+									"        const responseJson = pm.response.json();",
+									"        if (responseJson.current !== undefined){",
+									"        pm.expect(responseJson.current).to.be.an(\"number\");    ",
+									"        }",
+									"        if (responseJson.withdrawn !== undefined){",
+									"        pm.expect(responseJson.withdrawn).to.be.an(\"number\");    ",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser2\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/balance",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/user/balance - 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"Check empty body\", () => {",
+									"  pm.response.to.not.be.withBody;",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\",",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/balance",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"balance"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/user/balance/withdraw POST",
+			"item": [
+				{
+					"name": "api/user/balance/withdraw - 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomValidOrderForWithdraw\", random(12));",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order\": \"{{randomValidOrderForWithdraw}}\",\n    \"sum\": 1\n} ",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/balance/withdraw",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"balance",
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/user/balance/withdraw - 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomValidOrderForWithdrawFailAuth\", random(12));",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\",",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order\": \"{{randomValidOrderForWithdrawFailAuth}}\",\n    \"sum\": 1\n} ",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/balance/withdraw",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"balance",
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/user/balance/withdraw - 402",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 402\", function () {",
+									"    pm.response.to.have.status(402);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomValidOrderForWithdraw\", random(12));",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order\": \"{{randomValidOrderForWithdraw}}\",\n    \"sum\": 1000000\n} ",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/balance/withdraw",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"balance",
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/user/balance/withdraw - 422",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomInvalidOrder\", random(12));",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order\": \"{{randomInvalidOrder}}13\",\n    \"sum\": 10\n} ",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/balance/withdraw",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"balance",
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "/api/user/withdrawals",
+			"item": [
+				{
+					"name": "api/user/withdrawals - 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", () => {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+									"});",
+									"pm.test(\"Content-Length exist\", () => {",
+									"    pm.response.to.have.header(\"Content-Length\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Check json response\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson[0].order).to.be.an(\"string\");",
+									"    pm.expect(responseJson[0].sum).to.be.an(\"number\");",
+									"    pm.expect(responseJson[0].processed_at).to.be.an(\"string\");",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomValidOrderForWithdraw\", random(12));",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser1\"),",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/withdrawals",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"withdrawals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/user/withdrawals - 204 (user 2)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"pm.test(\"Check empty body\", () => {",
+									"  pm.response.to.not.be.withBody;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomValidOrderForWithdraw\", random(12));",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: pm.variables.get(\"tokenUser2\"),",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/withdrawals",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"withdrawals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/user/withdrawals - 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Check empty body\", () => {",
+									"  pm.response.to.not.be.withBody;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function checksum(input) {",
+									"  const string = input.toString();",
+									"  let sum = 0;",
+									"  let parity = 2;",
+									"",
+									"  for (let i = string.length - 1; i >= 0; i--) {",
+									"    const digit = Math.max(parity, 1) * string[i];",
+									"",
+									"    sum +=",
+									"      digit > 9",
+									"        ? digit",
+									"            .toString()",
+									"            .split(\"\")",
+									"            .map(Number)",
+									"            .reduce((a, b) => a + b, 0)",
+									"        : digit;",
+									"    parity *= -1;",
+									"  }",
+									"",
+									"  sum %= 10;",
+									"",
+									"  return sum > 0 ? 10 - sum : 0;",
+									"}",
+									"",
+									"function generate(input, inputOptions) {",
+									"  let string = input.toString();",
+									"  const options = { pad: 0, weightFactor: 2 };",
+									"",
+									"  // option pad",
+									"  if (typeof inputOptions !== \"undefined\") {",
+									"    if (typeof inputOptions.pad !== \"undefined\") {",
+									"      options.pad = inputOptions.pad;",
+									"",
+									"      if (options.pad > string.length) {",
+									"        string = Array(options.pad - String(string).length).join(\"0\") + string;",
+									"      }",
+									"    }",
+									"  }",
+									"",
+									"  return string + checksum(string);",
+									"}",
+									"",
+									"function random(input, inputOptions) {",
+									"  function getRandomStringOfNumbers(length) {",
+									"    let randomStringOfNumbers = \"\";",
+									"",
+									"    while (randomStringOfNumbers.length < length) {",
+									"      const random = Math.random().toString();",
+									"",
+									"      randomStringOfNumbers += random.substr(2, random.length);",
+									"",
+									"      if (randomStringOfNumbers.length > length) {",
+									"        randomStringOfNumbers = randomStringOfNumbers.substr(0, length);",
+									"      }",
+									"    }",
+									"",
+									"    return randomStringOfNumbers;",
+									"  }",
+									"",
+									"  return generate(getRandomStringOfNumbers(input - 1), inputOptions);",
+									"}",
+									"",
+									"function validate(input) {",
+									"  return (",
+									"    checksum(input.toString().slice(0, -1)) ===",
+									"    parseInt(input.toString().slice(-1))",
+									"  );",
+									"}",
+									"",
+									"pm.environment.set(\"randomValidOrderForWithdrawFailAuth\", random(12));",
+									"",
+									"pm.request.headers.add({",
+									"    key: \"Authorization\",",
+									"    value: \"\",",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order\": \"{{randomValidOrderForWithdrawFailAuth}}\",\n    \"sum\": 1\n} ",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/user/withdrawals",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"withdrawals"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

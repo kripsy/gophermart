@@ -1,0 +1,30 @@
+name: Go test coverage check
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+permissions:
+  contents: write
+
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+
+      - name: generate test coverage
+        run: go test ./... -coverprofile=./cover.out
+
+      - name: check test coverage
+        uses: vladopajic/go-test-coverage@v2
+        with:
+          profile: cover.out
+          local-prefix: github.com/org/project
+          threshold-file: 55
+          threshold-package: 55
+          threshold-total: 69

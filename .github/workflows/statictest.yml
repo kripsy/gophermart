@@ -32,4 +32,5 @@ jobs:
 
       - name: Run statictest
         run: |
-          go vet -vettool=$(which statictest) ./...
+          go list ./... | grep -v "github.com/go-json-experiment/json" | xargs -L1 -I {} bash -c 'if ls {}/*.go &> /dev/null; then go vet -vettool=$(which statictest) {}; fi'
+

@@ -1,29 +1,55 @@
+# Start app
+
+1. docker-compose up
+2. Enjoy ;)
+
+# krakenD
+
+## If you exec app services not in docker for mac:
+
+1. In ./krakend/config/krakend.json change backend.host to `http://docker.for.mac.localhost:portServices` if you use mac.
+2. Start services as `go run ./cmd/auth/main.go -l "Debug" -a "127.0.0.1:8081"`
+
+# for build apps:
+
+1. run `make build` in root directory
+
+# swag
+
+1. go to root folder project
+2. exec `~/go/bin/swag init -g "cmd/auth/main.go" -o "docs/auth/"`
+3. swagger on page `/swagger/index.html`
+
 # create new migration
 
-1. change `docker-compose.migrations.yml` service `migration_db_add` and exec `docker-compose -f ./docker-compose.migrations.yml up migration_db_add`
+1. go to /db/{service_name}.
+2. In `docker-compose.migrations.yml` change service `migration_db_add`.
+3. Go to /Makefiles/{service_name} and call `make migration_new `.
 
-# go-musthave-group-diploma-tpl
+# Отличия реализации от задания
 
-Шаблон репозитория для группового дипломного проекта курса "Go-разработчик"
+Все контейнеры скрыты от пользователя в докеркомпоузе. Этим самым соблюдён один из принципов REST Многоуровневость,
+в коммуникации участвуют двое: клиент и сервер. Каждый компонент должен видеть только свой уровень. Клиент общается 
+только с auth (регистрация и аутентификация) и gophermart (логика приложения доступные для клиента). Для доступа к 
+ручкам gophermart клиенту необходимо пройти аутентификацию. 
 
-# Начало работы
+Сервис accrual является внутренним для системы. Ручки сервиса accrual не проверяют аутентификацию клиента и поэтому 
+не доступны для пользователя. При обращении к ним пользователя они должны быть недоступны и такой результат 
+интеграционных тестов считается ожидаемым.
 
-1. Склонируйте репозиторий в любую подходящую директорию на вашем компьютере
-2. В корне репозитория выполните команду `go mod init <name>` (где `<name>` — адрес вашего репозитория на GitHub без
-   префикса `https://`) для создания модуля
+Для тестирования сервиса accrual его можно поднять отдельно. Например, так.
 
-# Обновление шаблона
-
-Чтобы иметь возможность получать обновления автотестов и других частей шаблона, выполните команду:
-
-```
-git remote add -m master template https://github.com/yandex-praktikum/go-musthave-group-diploma-tpl.git
-```
-
-Для обновления кода автотестов выполните команду:
-
-```
-git fetch template && git checkout template/master .github
+```bash
+go run cmd/accrual/main.go -a "localhost:8081" -d "postgres://postgres:postgres@localhost:5432/accrual?sslmode=disable"
 ```
 
-Затем добавьте полученные изменения в свой репозиторий.
+Для проверки результатов работы сервиса есть своеобразный backdoor. Наружу прокинут порт 5432 и в контейнере поднят 
+pgAdmin можно посмотреть данные в базе.
+
+В репозитории есть коллекция которую рекомендуем использовать для интеграционного тестирования. Она очень близка к 
+техническому заданию. В ней реализовано 78 тестов для всех предусмотренный вариантов действий клиента по всем 7 
+доступным ему ручкам. Это 100% покрытие реализованных ручек со всеми вариантами ответов предусмотренными нашим сервисом.
+Кроме этого код на 70% покрыт unit тестами на хендлеры.
+
+В pipeline дополнительно добавлены проверки линтером (golangci-lint.yml), запуск unit тестов (gounittest.yml), 
+проверка на покрытие unit тестами (go-test-coverage.yml)
